@@ -14,6 +14,12 @@
         box-sizing: border-box;
     }
 
+    html {
+        scroll-behavior: auto;
+        scroll-padding-top: 0;
+        overflow-anchor: none;
+    }
+
     body {
         margin: 0;
         padding: 16px;
@@ -37,15 +43,18 @@
 
 </style>
 
+<script>
+
+    // Always open this page at the top
+    if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+    }
+
+</script>
+
 </head>
 
 <body>
-    
-    <script>
-    window.addEventListener("load", function () {
-        window.scrollTo(0, 0);
-    });
-</script>
 
 <h1>PRJ LostLink</h1>
 
@@ -80,10 +89,23 @@
 </p>
 
 <div class="version-label">
-    Alpha Prototype
+    V.Prototype
 </div>
 
 <script src="script.js"></script>
+
+<script>
+
+    // Make sure the page finishes at the top
+    window.addEventListener("load", function () {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "instant"
+        });
+    });
+
+</script>
 
 </body>
 
