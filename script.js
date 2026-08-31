@@ -139,18 +139,21 @@ async function searchItem() {
             results.map(item => {
 
                 return `
-                    <p>
+                    <div>
+
                         <strong>
                             ${escapeHTML(
                                 item["Item name"] ||
                                 "Unknown item"
                             )}
                         </strong>
+
                         <br>
 
                         ${escapeHTML(
                             item["Descption"] || ""
                         )}
+
                         <br>
 
                         Location:
@@ -158,6 +161,7 @@ async function searchItem() {
                             item["Location found"] ||
                             "Unknown"
                         )}
+
                         <br>
 
                         Date:
@@ -165,7 +169,8 @@ async function searchItem() {
                             item["Date"] ||
                             "Unknown"
                         )}
-                    </p>
+
+                    </div>
 
                     <hr>
                 `;
@@ -292,21 +297,17 @@ function loadAdminItems() {
     const items =
         getItems();
 
-
     const container =
         document.getElementById("pendingItems");
-
 
     if (!container) {
         return;
     }
 
-
     const pending =
         items.filter(item =>
             item.status === "Pending"
         );
-
 
     if (pending.length === 0) {
 
@@ -315,7 +316,6 @@ function loadAdminItems() {
 
         return;
     }
-
 
     container.innerHTML =
         pending.map(item => {
@@ -370,19 +370,16 @@ function approveItem(id) {
     let items =
         getItems();
 
-
     const item =
         items.find(item =>
             item.id === id
         );
-
 
     if (item) {
 
         item.status =
             "Approved";
     }
-
 
     saveItems(items);
 
@@ -399,12 +396,10 @@ function rejectItem(id) {
     let items =
         getItems();
 
-
     items =
         items.filter(item =>
             item.id !== id
         );
-
 
     saveItems(items);
 
@@ -413,7 +408,7 @@ function rejectItem(id) {
 
 
 // ========================================
-// DISPLAY LATEST ITEMS
+// RECENTLY FOUND ITEMS - HOMEPAGE
 // ========================================
 
 async function loadLatestItems() {
@@ -421,15 +416,12 @@ async function loadLatestItems() {
     const container =
         document.getElementById("latestItems");
 
-
     if (!container) {
         return;
     }
 
-
     container.innerHTML =
         "Loading...";
-
 
     try {
 
@@ -437,6 +429,7 @@ async function loadLatestItems() {
             await getGoogleSheetItems();
 
 
+        // Only approved items
         const approved =
             items.filter(item =>
                 String(item["Status"])
@@ -445,14 +438,14 @@ async function loadLatestItems() {
             );
 
 
-        // Newest first
+        // Newest items first
         approved.sort((a, b) =>
             new Date(b["Timestamp"]) -
             new Date(a["Timestamp"])
         );
 
 
-        // Homepage: only 3 newest
+        // Only show 3 on homepage
         const recent =
             approved.slice(0, 3);
 
@@ -466,18 +459,47 @@ async function loadLatestItems() {
         }
 
 
+        // Show all information
         container.innerHTML =
             recent.map(item => {
 
                 return `
-                    <p>
+                    <div>
+
                         <strong>
                             ${escapeHTML(
                                 item["Item name"] ||
                                 "Unknown item"
                             )}
                         </strong>
-                    </p>
+
+                        <br><br>
+
+                        Description:
+                        ${escapeHTML(
+                            item["Descption"] ||
+                            "No description"
+                        )}
+
+                        <br>
+
+                        Location:
+                        ${escapeHTML(
+                            item["Location found"] ||
+                            "Unknown"
+                        )}
+
+                        <br>
+
+                        Date:
+                        ${escapeHTML(
+                            item["Date"] ||
+                            "Unknown"
+                        )}
+
+                    </div>
+
+                    <hr>
                 `;
 
             }).join("");
@@ -490,15 +512,14 @@ async function loadLatestItems() {
             error
         );
 
-
         container.innerHTML =
-            "<p>Unable to load latest items.</p>";
+            "<p>Unable to load recently found items.</p>";
     }
 }
 
 
 // ========================================
-// LATEST PAGE - ALL APPROVED ITEMS
+// ALL LATEST ITEMS PAGE
 // ========================================
 
 async function loadAllLatestItems() {
@@ -506,15 +527,12 @@ async function loadAllLatestItems() {
     const container =
         document.getElementById("allLatestItems");
 
-
     if (!container) {
         return;
     }
 
-
     container.innerHTML =
         "Loading...";
-
 
     try {
 
@@ -522,6 +540,7 @@ async function loadAllLatestItems() {
             await getGoogleSheetItems();
 
 
+        // Only approved items
         const approved =
             items.filter(item =>
                 String(item["Status"])
@@ -530,6 +549,7 @@ async function loadAllLatestItems() {
             );
 
 
+        // Newest first
         approved.sort((a, b) =>
             new Date(b["Timestamp"]) -
             new Date(a["Timestamp"])
@@ -549,14 +569,42 @@ async function loadAllLatestItems() {
             approved.map(item => {
 
                 return `
-                    <p>
+                    <div>
+
                         <strong>
                             ${escapeHTML(
                                 item["Item name"] ||
                                 "Unknown item"
                             )}
                         </strong>
-                    </p>
+
+                        <br><br>
+
+                        Description:
+                        ${escapeHTML(
+                            item["Descption"] ||
+                            "No description"
+                        )}
+
+                        <br>
+
+                        Location:
+                        ${escapeHTML(
+                            item["Location found"] ||
+                            "Unknown"
+                        )}
+
+                        <br>
+
+                        Date:
+                        ${escapeHTML(
+                            item["Date"] ||
+                            "Unknown"
+                        )}
+
+                    </div>
+
+                    <hr>
                 `;
 
             }).join("");
@@ -568,7 +616,6 @@ async function loadAllLatestItems() {
             "Latest items error:",
             error
         );
-
 
         container.innerHTML =
             "<p>Unable to load latest items.</p>";
@@ -652,7 +699,6 @@ function parseCSV(text) {
                 i++;
             }
 
-
             row.push(value);
 
             rows.push(row);
@@ -704,6 +750,7 @@ function escapeHTML(value) {
 // START FUNCTIONS
 // ========================================
 
+
 // Admin dashboard
 
 if (
@@ -714,7 +761,7 @@ if (
 }
 
 
-// Homepage - 3 latest items
+// Homepage
 
 if (
     document.getElementById("latestItems")
@@ -724,7 +771,7 @@ if (
 }
 
 
-// Latest items page - full list
+// Full latest items page
 
 if (
     document.getElementById("allLatestItems")
