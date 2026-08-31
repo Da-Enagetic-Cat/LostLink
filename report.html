@@ -1,79 +1,152 @@
 <!DOCTYPE html>
+
 <html>
-<<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report - PRJ LostLink</title>
-    <style>
-* {
-    box-sizing: border-box;
-}
 
-body {
-    margin: 0;
-    padding: 16px;
-    width: 100%;
-    overflow-x: hidden;
-}
+<head>
 
-input,
-textarea,
-select,
-button {
-    max-width: 100%;
-    font-size: 16px;
-}
+```
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-button {
-    min-height: 44px;
-    padding: 10px 16px;
-}
+<title>Report Item - PRJ LostLink</title>
 
-img {
-    max-width: 100%;
-    height: auto;
-}
+<style>
 
-@media (max-width: 600px) {
+    * {
+        box-sizing: border-box;
+    }
+
     body {
-        padding: 12px;
+        margin: 0;
+        padding: 16px;
+        width: 100%;
+        overflow-x: hidden;
+        font-family: Arial, sans-serif;
     }
 
     input,
     textarea,
-    select,
     button {
         width: 100%;
+        max-width: 100%;
+        font-size: 16px;
     }
-}
-html {
-    scroll-behavior: auto;
-    scroll-padding-top: 0;
-}
+
+    input,
+    textarea {
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    button {
+        min-height: 44px;
+        padding: 10px 16px;
+    }
+
+    @media (max-width: 600px) {
+
+        body {
+            padding: 12px;
+        }
+
+    }
+
+    .version-label {
+        text-align: center;
+        margin-top: 30px;
+        padding: 10px;
+        font-size: 12px;
+        opacity: 0.6;
+    }
+
 </style>
+```
+
 </head>
 
 <body>
 
-    <script>
-    window.scrollTo(0, 0);
-</script>
-
+```
 <h1>PRJ LostLink</h1>
 
-<h2>Report a Lost or Found Item</h2>
-
-<p>
-Click the button below to submit a lost or found item.
-</p>
-
-<p>
-<a href="https://docs.google.com/forms/d/e/1FAIpQLSdjmCGYl_BlAd7tXyWs6W6go0oQRUPD14rmbxW1Y6hBBtdBGQ/viewform?usp=header" target="_blank">
-    [Open Submission Form]
-</a>
-</p>
+<p>Report a lost or found item.</p>
 
 <hr>
 
-<a href="index.html">← Back to Home</a>
+
+<p>
+    <a href="index.html">← Back to Home</a>
+</p>
+
+
+<h2>Report Item</h2>
+
+
+<label for="itemName">
+    Item name
+</label>
+
+<input
+    type="text"
+    id="itemName"
+    placeholder="Example: Black wallet"
+>
+
+
+<label for="description">
+    Description
+</label>
+
+<textarea
+    id="description"
+    placeholder="Describe the item"
+></textarea>
+
+
+<label for="location">
+    Location found
+</label>
+
+<input
+    type="text"
+    id="location"
+    placeholder="Example: Gym"
+>
+
+
+<label for="date">
+    Date found
+</label>
+
+<input
+    type="date"
+    id="date"
+>
+
+
+<button
+    type="button"
+    onclick="submitItem()"
+>
+    Submit Report
+</button>
+
+
+<p id="message"></p>
+
+
+<div class="version-label">
+    V.Prototype
+</div>
+
+
+<script src="script.js"></script>
+```
 
 </body>
+
 </html>

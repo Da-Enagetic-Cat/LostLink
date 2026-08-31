@@ -1,78 +1,139 @@
 <!DOCTYPE html>
+
 <html>
+
 <head>
+
+```
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search - PRJ LostLink</title>
-    <style>
-* {
-    box-sizing: border-box;
-}
 
-body {
-    margin: 0;
-    padding: 16px;
-    width: 100%;
-    overflow-x: hidden;
-}
+<title>PRJ LostLink</title>
 
-input,
-textarea,
-select,
-button {
-    max-width: 100%;
-    font-size: 16px;
-}
+<style>
 
-button {
-    min-height: 44px;
-    padding: 10px 16px;
-}
+    * {
+        box-sizing: border-box;
+    }
 
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-@media (max-width: 600px) {
     body {
-        padding: 12px;
+        margin: 0;
+        padding: 16px;
+        width: 100%;
+        overflow-x: hidden;
     }
 
     input,
     textarea,
     select,
     button {
-        width: 100%;
+        max-width: 100%;
+        font-size: 16px;
     }
-}
-html {
-    scroll-behavior: auto;
-    scroll-padding-top: 0;
-}
+
+    button {
+        min-height: 44px;
+        padding: 10px 16px;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    @media (max-width: 600px) {
+
+        body {
+            padding: 12px;
+        }
+
+        input,
+        textarea,
+        select,
+        button {
+            width: 100%;
+        }
+
+    }
+
+    html {
+        scroll-behavior: auto;
+        scroll-padding-top: 0;
+    }
+
+    .version-label {
+        text-align: center;
+        margin-top: 30px;
+        padding: 10px;
+        font-size: 12px;
+        opacity: 0.6;
+    }
+
 </style>
+```
+
 </head>
 
 <body>
 
-    <script>
-    window.scrollTo(0, 0);
-</script>
-
+```
 <h1>PRJ LostLink</h1>
 
-<h2>Search for an Item</h2>
-
-<input type="text" id="searchBox" placeholder="Enter item name">
-
-<button onclick="searchItem()">Search</button>
-
-<p id="results">Enter a keyword and press Search.</p>
+<p>Student Lost & Found System</p>
 
 <hr>
 
-<a href="index.html">← Back to Home</a>
+
+<h2>Menu</h2>
+
+<p>
+    <a href="search.html">
+        [1] Search for an item
+    </a>
+</p>
+
+<p>
+    <a href="report.html">
+        [2] Report a lost/found item
+    </a>
+</p>
+
+<p>
+    <a href="latest.html">
+        [3] View Latest Items
+    </a>
+</p>
+
+<p>
+    <a href="admin.html">
+        [4] Admin login
+    </a>
+</p>
+
+
+<hr>
+
+
+<h2>Recently Found Items</h2>
+
+<div id="latestItems">
+    Loading...
+</div>
+
+<p>
+    <a href="latest.html">
+        View all latest items →
+    </a>
+</p>
+
 
 <script src="script.js"></script>
 
+
+<div class="version-label">
+    V.Prototype
+</div>
+```
+
 </body>
+
 </html>
