@@ -17,54 +17,111 @@
     html {
         margin: 0;
         padding: 0;
-        scroll-behavior: auto;
-        overflow-anchor: none;
+        width: 100%;
+        min-width: 100%;
         overflow-x: hidden;
+        scroll-behavior: auto;
     }
 
     body {
         margin: 0;
         padding: 16px;
         width: 100%;
+        min-width: 100%;
         min-height: 100vh;
+
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.5;
+
+        text-align: left;
+
         overflow-x: hidden;
         overflow-y: auto;
-        font-family: Arial, sans-serif;
-        text-align: left;
+
         display: block;
     }
 
-    @media (max-width: 600px) {
-        body {
-            padding: 12px;
-        }
+    /* Main page content uses the entire available width */
+
+    h1,
+    h2,
+    p,
+    hr,
+    #latestItems,
+    .version-label {
+        max-width: none;
+        width: 100%;
     }
 
-    .powered-by p {
-        margin: 0 0 10px 0;
+    h1 {
+        margin: 0 0 4px 0;
+        font-size: 2em;
+        font-weight: 700;
     }
 
-    .powered-by h1 {
-        margin: 0;
+    h2 {
+        margin: 20px 0 10px 0;
+        font-weight: 700;
+    }
+
+    p {
+        margin: 10px 0;
+    }
+
+    hr {
+        margin: 20px 0;
+        border: 0;
+        border-top: 1px solid;
+    }
+
+    a {
+        font-size: 16px;
+    }
+
+    #latestItems {
+        width: 100%;
+    }
+
+    #latestItems div {
+        width: 100%;
     }
 
     .version-label {
-        text-align: center;
         margin-top: 30px;
-        padding: 10px;
+        padding: 10px 0;
+        text-align: center;
         font-size: 12px;
         opacity: 0.6;
     }
 
-    #top {
-        position: relative;
+    @media (max-width: 600px) {
+
+        body {
+            padding: 12px;
+            font-size: 16px;
+        }
+
+        h1 {
+            font-size: 1.8em;
+        }
+
+        h2 {
+            font-size: 1.4em;
+        }
+
+        a {
+            font-size: 16px;
+        }
+
     }
 
 </style>
 
 <script>
 
-    // Prevent mobile browsers from restoring an old scroll position
+    // Prevent browser from restoring an old scroll position
+
     if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
     }
@@ -75,13 +132,9 @@
 
 <body>
 
-<div id="top">
-
 <h1>LostLink Network System</h1>
 
 <p>Student Lost &amp; Found System</p>
-
-</div>
 
 <hr>
 
@@ -104,7 +157,9 @@
 <h2>Recently Found Items</h2>
 
 <div id="latestItems">
+
     <p>Loading...</p>
+
 </div>
 
 <p>
@@ -118,23 +173,12 @@
 </p>
 
 <div class="version-label">
+
     Alpha Prototype
+
 </div>
 
 <script src="script.js"></script>
-
-<script>
-
-    // Force homepage to the top
-    window.addEventListener("load", function () {
-        window.scrollTo(0, 0);
-    });
-
-    window.addEventListener("pageshow", function () {
-        window.scrollTo(0, 0);
-    });
-
-</script>
 
 </body>
 

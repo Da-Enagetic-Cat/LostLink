@@ -3,21 +3,6 @@
 // ========================================
 
 
-
-// ========================================
-// PAGE SCROLL POSITION
-// ========================================
-
-// Prevent browser from restoring an old scroll position
-if ("scrollRestoration" in history) {
-    history.scrollRestoration = "manual";
-}
-
-// Always open the page at the top
-window.addEventListener("pageshow", function () {
-    window.scrollTo(0, 0);
-});
-
 // ========================================
 // GOOGLE SHEET
 // ========================================
@@ -153,6 +138,9 @@ async function searchItem() {
         resultsBox.innerHTML =
             results.map(item => {
 
+                const photo =
+                    String(item["Photo"] || "").trim();
+
                 return `
                     <div>
 
@@ -168,6 +156,18 @@ async function searchItem() {
                         ${escapeHTML(
                             item["Descption"] || ""
                         )}
+
+                        ${photo ? `
+                            <br><br>
+                            Photo:
+                            <a
+                                href="${escapeHTML(photo)}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                View Photo
+                            </a>
+                        ` : ""}
 
                         <br>
 
@@ -444,7 +444,6 @@ async function loadLatestItems() {
             await getGoogleSheetItems();
 
 
-        // Only approved items
         const approved =
             items.filter(item =>
                 String(item["Status"])
@@ -453,14 +452,12 @@ async function loadLatestItems() {
             );
 
 
-        // Newest items first
         approved.sort((a, b) =>
             new Date(b["Timestamp"]) -
             new Date(a["Timestamp"])
         );
 
 
-        // Only show 3 on homepage
         const recent =
             approved.slice(0, 3);
 
@@ -474,7 +471,7 @@ async function loadLatestItems() {
         }
 
 
-        // Show all information
+        // Main page intentionally has NO photo link
         container.innerHTML =
             recent.map(item => {
 
@@ -555,7 +552,6 @@ async function loadAllLatestItems() {
             await getGoogleSheetItems();
 
 
-        // Only approved items
         const approved =
             items.filter(item =>
                 String(item["Status"])
@@ -564,7 +560,6 @@ async function loadAllLatestItems() {
             );
 
 
-        // Newest first
         approved.sort((a, b) =>
             new Date(b["Timestamp"]) -
             new Date(a["Timestamp"])
@@ -583,6 +578,9 @@ async function loadAllLatestItems() {
         container.innerHTML =
             approved.map(item => {
 
+                const photo =
+                    String(item["Photo"] || "").trim();
+
                 return `
                     <div>
 
@@ -600,6 +598,18 @@ async function loadAllLatestItems() {
                             item["Descption"] ||
                             "No description"
                         )}
+
+                        ${photo ? `
+                            <br><br>
+                            Photo:
+                            <a
+                                href="${escapeHTML(photo)}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                View Photo
+                            </a>
+                        ` : ""}
 
                         <br>
 
