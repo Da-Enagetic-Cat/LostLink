@@ -1,79 +1,141 @@
 <!DOCTYPE html>
+
 <html>
-<head> 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Review - PRJ LostLink</title>
-    <style>
-* {
-    box-sizing: border-box;
-}
 
-body {
-    margin: 0;
-    padding: 16px;
-    width: 100%;
-    overflow-x: hidden;
-    font-family: Arial, sans-serif;
-}
+<head>
 
-input,
-textarea,
-select,
-button {
-    max-width: 100%;
-    font-size: 16px;
-}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-button {
-    min-height: 44px;
-    padding: 10px 16px;
-}
+<title>LostLink Network System</title>
 
-img {
-    max-width: 100%;
-    height: auto;
-}
+<style>
 
-@media (max-width: 600px) {
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        margin: 0;
+        padding: 0;
+        scroll-behavior: auto;
+        overflow-anchor: none;
+        overflow-x: hidden;
+    }
+
     body {
-        padding: 12px;
+        margin: 0;
+        padding: 16px;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        font-family: Arial, sans-serif;
+        text-align: left;
+        display: block;
     }
 
-    input,
-    textarea,
-    select,
-    button {
-        width: 100%;
+    @media (max-width: 600px) {
+        body {
+            padding: 12px;
+        }
     }
-}
-html {
-    scroll-behavior: auto;
-    scroll-padding-top: 0;
-}
+
+    .powered-by p {
+        margin: 0 0 10px 0;
+    }
+
+    .powered-by h1 {
+        margin: 0;
+    }
+
+    .version-label {
+        text-align: center;
+        margin-top: 30px;
+        padding: 10px;
+        font-size: 12px;
+        opacity: 0.6;
+    }
+
+    #top {
+        position: relative;
+    }
+
 </style>
+
+<script>
+
+    // Prevent mobile browsers from restoring an old scroll position
+    if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+    }
+
+</script>
+
 </head>
 
 <body>
 
-    <script>
-    window.scrollTo(0, 0);
-</script>
+<div id="top">
 
-<h1>LostLink NTW System</h1>
+<h1>LostLink Network System</h1>
 
-<h2>Admin Review</h2>
+<p>Student Lost &amp; Found System</p>
 
-<p>Pending submissions:</p>
-
-<div id="pendingItems">
-    <p>No submissions yet.</p>
 </div>
 
 <hr>
 
-<a href="index.html">← Back to Home</a>
+<h2>Menu</h2>
+
+<p>
+    <a href="search.html">[1] Search for an item</a>
+</p>
+
+<p>
+    <a href="report.html">[2] Report a lost/found item</a>
+</p>
+
+<p>
+    <a href="latest.html">[3] View Latest Items</a>
+</p>
+
+<hr>
+
+<h2>Recently Found Items</h2>
+
+<div id="latestItems">
+    <p>Loading...</p>
+</div>
+
+<p>
+    <a href="latest.html">View all latest items →</a>
+</p>
+
+<hr>
+
+<p>
+    <a href="DEV.html">System Description</a>
+</p>
+
+<div class="version-label">
+    Alpha Prototype
+</div>
 
 <script src="script.js"></script>
 
+<script>
+
+    // Force homepage to the top
+    window.addEventListener("load", function () {
+        window.scrollTo(0, 0);
+    });
+
+    window.addEventListener("pageshow", function () {
+        window.scrollTo(0, 0);
+    });
+
+</script>
+
 </body>
+
 </html>
