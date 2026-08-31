@@ -16,7 +16,6 @@
 
     html {
         scroll-behavior: auto;
-        scroll-padding-top: 0;
         overflow-anchor: none;
     }
 
@@ -45,7 +44,7 @@
 
 <script>
 
-    // Always open this page at the top
+    // Prevent mobile browsers from restoring an old scroll position
     if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
     }
@@ -81,7 +80,7 @@
 <h2>Recently Found Items</h2>
 
 <div id="latestItems">
-    Loading...
+    <p>Loading...</p>
 </div>
 
 <p>
@@ -92,17 +91,19 @@
     V.Prototype
 </div>
 
-<!-- <script src="script.js"></script> -->
+<script src="script.js"></script>
 
 <script>
 
-    // Make sure the page finishes at the top
+    // Force the homepage to the top after everything has loaded
     window.addEventListener("load", function () {
-        window.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: "instant"
-        });
+
+        setTimeout(function () {
+
+            window.scrollTo(0, 0);
+
+        }, 100);
+
     });
 
 </script>
