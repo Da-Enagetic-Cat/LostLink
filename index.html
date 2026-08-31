@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>LostLink NTW System</title>
+<title>LostLink Network System</title>
 
 <style>
 
@@ -32,8 +32,6 @@
         font-family: Arial, sans-serif;
         text-align: left;
         display: block;
-        position: relative;
-        top: 0;
     }
 
     @media (max-width: 600px) {
@@ -73,13 +71,9 @@
 
 <body>
 
-<div id="top">
-
-<h1>LostLink NTW System</h1>
+<h1>LostLink Network System</h1>
 
 <p>Student Lost & Found System</p>
-
-</div>
 
 <hr>
 
@@ -123,16 +117,29 @@
 
 <script>
 
-    // Always force LostLink homepage to the very top
-    window.history.scrollRestoration = "manual";
+    // If index.html was opened from another page,
+    // reload it once to reset the page position.
 
-    window.addEventListener("load", function () {
-        window.scrollTo(0, 0);
-    });
+    if (
+        document.referrer !== "" &&
+        !sessionStorage.getItem("lostlinkReloaded")
+    ) {
 
-    window.addEventListener("pageshow", function () {
+        sessionStorage.setItem(
+            "lostlinkReloaded",
+            "1"
+        );
+
+        window.location.reload();
+
+    } else {
+
+        sessionStorage.removeItem(
+            "lostlinkReloaded"
+        );
+
         window.scrollTo(0, 0);
-    });
+    }
 
 </script>
 
