@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
     <title>Latest Items - PRJ LostLink</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -14,13 +19,12 @@
             padding: 16px;
             width: 100%;
             overflow-x: hidden;
-            font-family: Arial, sans-serif;
         }
 
-        button {
-            min-height: 44px;
-            padding: 10px 16px;
-            font-size: 16px;
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
         }
 
         .version-label {
@@ -31,84 +35,32 @@
             opacity: 0.6;
         }
 
-        @media (max-width: 600px) {
-            body {
-                padding: 12px;
-            }
-        }
     </style>
+
 </head>
 
 <body>
 
-<h1>PRJ LostLink</h1>
+    <h1>PRJ LostLink</h1>
 
-<h2>Latest Items</h2>
+    <p>
+        <a href="index.html">← Back to Home</a>
+    </p>
 
-<div id="latestItems">
-    Loading...
-</div>
+    <hr>
 
-<br>
+    <h2>Latest Items</h2>
 
-<a href="index.html">← Back to Home</a>
+    <div id="allLatestItems">
+        Loading...
+    </div>
 
-<div class="version-label">V.Prototype</div>
+    <script src="script.js"></script>
 
-<script src="script.js"></script>
-
-<script>
-async function loadLatestItems() {
-
-    const container =
-        document.getElementById("latestItems");
-
-    try {
-
-        const items =
-            await getGoogleSheetItems();
-
-        const approved =
-            items.filter(item =>
-                String(item["Status"])
-                    .trim()
-                    .toLowerCase() === "approved"
-            );
-
-        approved.sort((a, b) =>
-            new Date(b["Timestamp"]) -
-            new Date(a["Timestamp"])
-        );
-
-        if (approved.length === 0) {
-
-            container.innerHTML =
-                "<p>No approved items yet.</p>";
-
-            return;
-        }
-
-        container.innerHTML =
-            approved.map(item => `
-                <p>
-                    ${escapeHTML(
-                        item["Item name"] ||
-                        "Unknown item"
-                    )}
-                </p>
-            `).join("");
-
-    } catch (error) {
-
-        console.error(error);
-
-        container.innerHTML =
-            "<p>Unable to load latest items.</p>";
-    }
-}
-
-loadLatestItems();
-</script>
+    <div class="version-label">
+        V.Prototype
+    </div>
 
 </body>
+
 </html>
