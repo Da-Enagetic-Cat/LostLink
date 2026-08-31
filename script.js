@@ -4,6 +4,14 @@
 
 
 // ========================================
+// GOOGLE SHEET
+// ========================================
+
+const sheetURL =
+    "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2f-TYo7GhC5rCURjJ29sp-jBOV4Ki_g5cL84HOUoqXm6XPc08i4Dp43pG91GpOiyLY2e00SArOzGE/pub?output=csv";
+
+
+// ========================================
 // LOCAL PROTOTYPE DATABASE
 // ========================================
 
@@ -17,45 +25,161 @@ function saveItems(items) {
 
 
 // ========================================
+// LOAD GOOGLE SHEET
+// ========================================
+
+async function getGoogleSheetItems() {
+
+    const response = await fetch(sheetURL);
+
+    if (!response.ok) {
+        throw new Error("Could not load Google Sheet.");
+    }
+
+    const csv = await response.text();
+
+    const rows = parseCSV(csv);
+
+    if (rows.length < 2) {
+        return [];
+    }
+
+    const headers = rows[0].map(header =>
+        header.trim()
+    );
+
+    return rows.slice(1).map(row => {
+
+        let item = {};
+
+        headers.forEach((header, index) => {
+            item[header] = row[index] || "";
+        });
+
+        return item;
+    });
+}
+
+
+// ========================================
 // SEARCH
 // ========================================
 
-function searchItem() {
-    let keyword = document.getElementById("searchBox").value.toLowerCase();
+async function searchItem() {
+
+    const searchBox =
+        document.getElementById("searchBox");
+
+    const resultsBox =
+        document.getElementById("results");
+
+    if (!searchBox || !resultsBox) {
+        return;
+    }
+
+    const keyword =
+        searchBox.value.trim().toLowerCase();
 
     if (keyword === "") {
-        document.getElementById("results").innerText =
+
+        resultsBox.innerText =
             "Please enter a search term.";
+
         return;
     }
 
-    let items = getItems();
+    resultsBox.innerText =
+        "Searching...";
 
-    let results = items.filter(item =>
-        item.status === "Approved" &&
-        (
-            item.name.toLowerCase().includes(keyword) ||
-            item.description.toLowerCase().includes(keyword) ||
-            item.location.toLowerCase().includes(keyword)
-        )
-    );
+    try {
 
-    if (results.length === 0) {
-        document.getElementById("results").innerText =
-            "No approved items found.";
-        return;
+        const items =
+            await getGoogleSheetItems();
+
+        const approved =
+            items.filter(item =>
+                String(item["Status"])
+                    .trim()
+                    .toLowerCase() === "approved"
+            );
+
+        const results =
+            approved.filter(item => {
+
+                const name =
+                    String(item["Item name"] || "")
+                        .toLowerCase();
+
+                const description =
+                    String(item["Descption"] || "")
+                        .toLowerCase();
+
+                const location =
+                    String(item["Location found"] || "")
+                        .toLowerCase();
+
+                return (
+                    name.includes(keyword) ||
+                    description.includes(keyword) ||
+                    location.includes(keyword)
+                );
+            });
+
+
+        if (results.length === 0) {
+
+            resultsBox.innerText =
+                "No approved items found.";
+
+            return;
+        }
+
+
+        resultsBox.innerHTML =
+            results.map(item => {
+
+                return `
+                    <p>
+                        <strong>
+                            ${escapeHTML(
+                                item["Item name"] || "Unknown item"
+                            )}
+                        </strong>
+                        <br>
+
+                        ${escapeHTML(
+                            item["Descption"] || ""
+                        )}
+                        <br>
+
+                        Location:
+                        ${escapeHTML(
+                            item["Location found"] || "Unknown"
+                        )}
+                        <br>
+
+                        Date:
+                        ${escapeHTML(
+                            item["Date"] || "Unknown"
+                        )}
+                    </p>
+
+                    <hr>
+                `;
+
+            }).join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Search error:",
+            error
+        );
+
+        resultsBox.innerText =
+            "Unable to search the items right now.";
     }
-
-    document.getElementById("results").innerHTML =
-        results.map(item =>
-            `<p>
-                <strong>${item.name}</strong><br>
-                ${item.description}<br>
-                Location: ${item.location}<br>
-                Date: ${item.date}
-            </p>
-            <hr>`
-        ).join("");
 }
 
 
@@ -64,38 +188,65 @@ function searchItem() {
 // ========================================
 
 function submitItem() {
-    let name = document.getElementById("itemName").value;
-    let description = document.getElementById("description").value;
-    let location = document.getElementById("location").value;
-    let date = document.getElementById("date").value;
+
+    const name =
+        document.getElementById("itemName").value;
+
+    const description =
+        document.getElementById("description").value;
+
+    const location =
+        document.getElementById("location").value;
+
+    const date =
+        document.getElementById("date").value;
+
 
     if (name === "") {
+
         document.getElementById("message").innerText =
             "Please enter an item name.";
+
         return;
     }
 
-    let items = getItems();
 
-    let newItem = {
+    const items =
+        getItems();
+
+
+    const newItem = {
+
         id: Date.now(),
+
         name: name,
+
         description: description,
+
         location: location,
+
         date: date,
+
         status: "Pending"
+
     };
+
 
     items.push(newItem);
 
     saveItems(items);
 
+
     document.getElementById("message").innerText =
         "Submission received! Waiting for admin approval.";
 
+
     document.getElementById("itemName").value = "";
+
     document.getElementById("description").value = "";
+
     document.getElementById("location").value = "";
+
     document.getElementById("date").value = "";
 }
 
@@ -105,12 +256,24 @@ function submitItem() {
 // ========================================
 
 function adminLogin() {
-    let username = document.getElementById("username").value;
-    let password = document.getElementById("password").value;
 
-    if (username === "admin" && password === "1234") {
-        window.location.href = "admin-dashboard.html";
+    const username =
+        document.getElementById("username").value;
+
+    const password =
+        document.getElementById("password").value;
+
+
+    if (
+        username === "admin" &&
+        password === "1234"
+    ) {
+
+        window.location.href =
+            "admin-dashboard.html";
+
     } else {
+
         document.getElementById("loginMessage").innerText =
             "Incorrect username or password.";
     }
@@ -122,45 +285,76 @@ function adminLogin() {
 // ========================================
 
 function loadAdminItems() {
-    let items = getItems();
 
-    let container = document.getElementById("pendingItems");
+    const items =
+        getItems();
+
+
+    const container =
+        document.getElementById("pendingItems");
+
 
     if (!container) {
         return;
     }
 
-    let pending = items.filter(item =>
-        item.status === "Pending"
-    );
+
+    const pending =
+        items.filter(item =>
+            item.status === "Pending"
+        );
+
 
     if (pending.length === 0) {
+
         container.innerHTML =
             "<p>No pending submissions.</p>";
+
         return;
     }
 
+
     container.innerHTML =
-        pending.map(item =>
-            `<div>
-                <hr>
+        pending.map(item => {
 
-                <strong>${item.name}</strong><br>
+            return `
+                <div>
 
-                Description: ${item.description}<br>
-                Location: ${item.location}<br>
-                Date: ${item.date}<br><br>
+                    <hr>
 
-                <button onclick="approveItem(${item.id})">
-                    Approve
-                </button>
+                    <strong>
+                        ${escapeHTML(item.name)}
+                    </strong>
 
-                <button onclick="rejectItem(${item.id})">
-                    Reject
-                </button>
+                    <br>
 
-            </div>`
-        ).join("");
+                    Description:
+                    ${escapeHTML(item.description)}
+
+                    <br>
+
+                    Location:
+                    ${escapeHTML(item.location)}
+
+                    <br>
+
+                    Date:
+                    ${escapeHTML(item.date)}
+
+                    <br><br>
+
+                    <button onclick="approveItem(${item.id})">
+                        Approve
+                    </button>
+
+                    <button onclick="rejectItem(${item.id})">
+                        Reject
+                    </button>
+
+                </div>
+            `;
+
+        }).join("");
 }
 
 
@@ -170,15 +364,22 @@ function loadAdminItems() {
 
 function approveItem(id) {
 
-    let items = getItems();
+    let items =
+        getItems();
 
-    let item = items.find(item =>
-        item.id === id
-    );
+
+    const item =
+        items.find(item =>
+            item.id === id
+        );
+
 
     if (item) {
-        item.status = "Approved";
+
+        item.status =
+            "Approved";
     }
+
 
     saveItems(items);
 
@@ -192,11 +393,15 @@ function approveItem(id) {
 
 function rejectItem(id) {
 
-    let items = getItems();
+    let items =
+        getItems();
 
-    items = items.filter(item =>
-        item.id !== id
-    );
+
+    items =
+        items.filter(item =>
+            item.id !== id
+        );
+
 
     saveItems(items);
 
@@ -205,61 +410,28 @@ function rejectItem(id) {
 
 
 // ========================================
-// GOOGLE SHEETS
+// DISPLAY APPROVED GOOGLE SHEET ITEMS
 // ========================================
 
 async function loadGoogleSheetItems() {
 
-    const sheetURL =
-        "https://docs.google.com/spreadsheets/d/e/2PACX-1vT2f-TYo7GhC5rCURjJ29sp-jBOV4Ki_g5cL84HOUoqXm6XPc08i4Dp43pG91GpOiyLY2e00SArOzGE/pub?output=csv";
-
     const container =
         document.getElementById("approvedItems");
+
 
     if (!container) {
         return;
     }
 
-    container.innerHTML = "Loading...";
+
+    container.innerHTML =
+        "Loading...";
+
 
     try {
 
-        const response =
-            await fetch(sheetURL);
-
-        if (!response.ok) {
-            throw new Error("Could not load Google Sheet.");
-        }
-
-        const csv =
-            await response.text();
-
-        const rows =
-            parseCSV(csv);
-
-        if (rows.length < 2) {
-            container.innerHTML =
-                "<p>No items found.</p>";
-            return;
-        }
-
-        const headers =
-            rows[0].map(header =>
-                header.trim()
-            );
-
         const items =
-            rows.slice(1).map(row => {
-
-                let item = {};
-
-                headers.forEach((header, index) => {
-                    item[header] =
-                        row[index] || "";
-                });
-
-                return item;
-            });
+            await getGoogleSheetItems();
 
 
         const approved =
@@ -284,20 +456,36 @@ async function loadGoogleSheetItems() {
 
                 return `
                     <p>
+
                         <strong>
-                            ${item["Item name"] || "Unknown item"}
+                            ${escapeHTML(
+                                item["Item name"] ||
+                                "Unknown item"
+                            )}
                         </strong>
+
                         <br>
 
-                      ${item["Descption"] || ""}
+                        ${escapeHTML(
+                            item["Descption"] || ""
+                        )}
+
                         <br>
 
                         Location:
-                        ${item["Location found"] || "Unknown"}
+                        ${escapeHTML(
+                            item["Location found"] ||
+                            "Unknown"
+                        )}
+
                         <br>
 
                         Date:
-                       ${item["Date"] || "Unknown"}
+                        ${escapeHTML(
+                            item["Date"] ||
+                            "Unknown"
+                        )}
+
                     </p>
 
                     <hr>
@@ -313,6 +501,7 @@ async function loadGoogleSheetItems() {
             error
         );
 
+
         container.innerHTML =
             "<p>Unable to load items from Google Sheets.</p>";
     }
@@ -321,56 +510,87 @@ async function loadGoogleSheetItems() {
 
 // ========================================
 // SIMPLE CSV PARSER
-// Handles commas inside "quotes"
 // ========================================
 
 function parseCSV(text) {
 
-    let rows = [];
+    const rows = [];
+
     let row = [];
+
     let value = "";
+
     let insideQuotes = false;
 
-    for (let i = 0; i < text.length; i++) {
 
-        let character = text[i];
-        let nextCharacter = text[i + 1];
+    for (
+        let i = 0;
+        i < text.length;
+        i++
+    ) {
+
+        const character =
+            text[i];
+
+        const nextCharacter =
+            text[i + 1];
 
 
-        if (character === '"' && insideQuotes && nextCharacter === '"') {
+        if (
+            character === '"' &&
+            insideQuotes &&
+            nextCharacter === '"'
+        ) {
 
             value += '"';
+
             i++;
 
         }
 
-        else if (character === '"') {
+        else if (
+            character === '"'
+        ) {
 
-            insideQuotes = !insideQuotes;
+            insideQuotes =
+                !insideQuotes;
 
         }
 
-        else if (character === "," && !insideQuotes) {
+        else if (
+            character === "," &&
+            !insideQuotes
+        ) {
 
             row.push(value);
+
             value = "";
 
         }
 
         else if (
-            (character === "\n" || character === "\r") &&
+            (
+                character === "\n" ||
+                character === "\r"
+            ) &&
             !insideQuotes
         ) {
 
-            if (character === "\r" && nextCharacter === "\n") {
+            if (
+                character === "\r" &&
+                nextCharacter === "\n"
+            ) {
+
                 i++;
             }
+
 
             row.push(value);
 
             rows.push(row);
 
             row = [];
+
             value = "";
 
         }
@@ -378,17 +598,18 @@ function parseCSV(text) {
         else {
 
             value += character;
-
         }
     }
 
 
-    if (value !== "" || row.length > 0) {
+    if (
+        value !== "" ||
+        row.length > 0
+    ) {
 
         row.push(value);
 
         rows.push(row);
-
     }
 
 
@@ -397,15 +618,39 @@ function parseCSV(text) {
 
 
 // ========================================
+// SECURITY / HTML ESCAPING
+// ========================================
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ========================================
 // START FUNCTIONS
 // ========================================
 
 // Admin dashboard
-if (document.getElementById("pendingItems")) {
+
+if (
+    document.getElementById("pendingItems")
+) {
+
     loadAdminItems();
 }
 
+
 // Homepage
-if (document.getElementById("approvedItems")) {
+
+if (
+    document.getElementById("approvedItems")
+) {
+
     loadGoogleSheetItems();
 }
