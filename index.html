@@ -115,19 +115,19 @@
     Alpha Prototype
 </div>
 
-<script src="script.js"></script>
+<<script src="script.js"></script>
 
 <script>
 
-    // Force the homepage to the top after everything has loaded
+    // Always force LostLink homepage to the very top
+    window.history.scrollRestoration = "manual";
+
     window.addEventListener("load", function () {
-
         window.scrollTo(0, 0);
+    });
 
-        setTimeout(function () {
-            window.scrollTo(0, 0);
-        }, 100);
-
+    window.addEventListener("pageshow", function () {
+        window.scrollTo(0, 0);
     });
 
 </script>
