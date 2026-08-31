@@ -56,6 +56,13 @@
         opacity: 0.6;
     }
 
+    /* The absolute top of the homepage */
+    #top {
+        position: relative;
+        top: 0;
+        margin-top: 0;
+    }
+
 </style>
 
 <script>
@@ -69,7 +76,7 @@
 
 </head>
 
-<body>
+<body id="top">
 
 <h1>LostLink Network System</h1>
 
@@ -114,34 +121,6 @@
 </div>
 
 <script src="script.js"></script>
-
-<script>
-
-    // If index.html was opened from another page,
-    // reload it once to reset the page position.
-
-    if (
-        document.referrer !== "" &&
-        !sessionStorage.getItem("lostlinkReloaded")
-    ) {
-
-        sessionStorage.setItem(
-            "lostlinkReloaded",
-            "1"
-        );
-
-        window.location.reload();
-
-    } else {
-
-        sessionStorage.removeItem(
-            "lostlinkReloaded"
-        );
-
-        window.scrollTo(0, 0);
-    }
-
-</script>
 
 </body>
 
