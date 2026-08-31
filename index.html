@@ -9,16 +9,38 @@
 <title>LostLink Network System</title>
 
 <style>
-    html, body {
-        margin: 0;
-        padding: 0;
-        min-height: 100%;
+
+    * {
+        box-sizing: border-box;
     }
 
-   body {
-    display: block;
-    text-align: center;
-}
+    html {
+        margin: 0;
+        padding: 0;
+        scroll-behavior: auto;
+        overflow-anchor: none;
+        overflow-x: hidden;
+    }
+
+    body {
+        margin: 0;
+        padding: 16px;
+        width: 100%;
+        min-height: 100vh;
+        overflow-x: hidden;
+        overflow-y: auto;
+        font-family: Arial, sans-serif;
+        text-align: left;
+        display: block;
+        position: relative;
+        top: 0;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            padding: 12px;
+        }
+    }
 
     .powered-by p {
         margin: 0 0 10px 0;
@@ -26,32 +48,6 @@
 
     .powered-by h1 {
         margin: 0;
-    }
-</style>
-
-<style>
-
-    * {
-        box-sizing: border-box;
-    }
-
-    html {
-        scroll-behavior: auto;
-        overflow-anchor: none;
-    }
-
-    body {
-        margin: 0;
-        padding: 16px;
-        width: 100%;
-        overflow-x: hidden;
-        font-family: Arial, sans-serif;
-    }
-
-    @media (max-width: 600px) {
-        body {
-            padding: 12px;
-        }
     }
 
     .version-label {
@@ -80,7 +76,6 @@
 <h1>LostLink Network System</h1>
 
 <p>Student Lost & Found System</p>
-<p></p>
 
 <hr>
 
@@ -113,11 +108,11 @@
 <hr>
 
 <p>
-    <a href="DEV.html"> System Description</a>
+    <a href="DEV.html">System Description</a>
 </p>
 
 <div class="version-label">
-Alpha Prototype    
+    Alpha Prototype
 </div>
 
 <script src="script.js"></script>
@@ -127,10 +122,10 @@ Alpha Prototype
     // Force the homepage to the top after everything has loaded
     window.addEventListener("load", function () {
 
+        window.scrollTo(0, 0);
+
         setTimeout(function () {
-
             window.scrollTo(0, 0);
-
         }, 100);
 
     });
