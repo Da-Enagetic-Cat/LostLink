@@ -1,119 +1,91 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
 
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0">
+```
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>PRJ LostLink</title>
+<title>PRJ LostLink</title>
 
-    <style>
+<style>
 
-        .version-label {
-            text-align: center;
-            margin-top: 30px;
-            padding: 10px;
-            font-size: 12px;
-            opacity: 0.6;
-        }
+    * {
+        box-sizing: border-box;
+    }
 
-        * {
-            box-sizing: border-box;
-        }
+    body {
+        margin: 0;
+        padding: 16px;
+        width: 100%;
+        overflow-x: hidden;
+    }
 
+    @media (max-width: 600px) {
         body {
-            margin: 0;
-            padding: 16px;
-            width: 100%;
-            overflow-x: hidden;
+            padding: 12px;
         }
+    }
 
-        input,
-        textarea,
-        select,
-        button {
-            max-width: 100%;
-            font-size: 16px;
-        }
+    .version-label {
+        text-align: center;
+        margin-top: 30px;
+        padding: 10px;
+        font-size: 12px;
+        opacity: 0.6;
+    }
 
-        button {
-            min-height: 44px;
-            padding: 10px 16px;
-        }
-
-        img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        @media (max-width: 600px) {
-
-            body {
-                padding: 12px;
-            }
-
-            input,
-            textarea,
-            select,
-            button {
-                width: 100%;
-            }
-
-        }
-
-        html {
-            scroll-behavior: auto;
-            scroll-padding-top: 0;
-        }
-
-    </style>
+</style>
+```
 
 </head>
 
 <body>
 
-    <script>
-        window.scrollTo(0, 0);
-    </script>
+```
+<h1>PRJ LostLink</h1>
 
+<p>Student Lost & Found System</p>
 
-    <h1>PRJ LostLink</h1>
+<hr>
 
-    <p>Student Lost & Found System</p>
+<h2>Menu</h2>
 
-    <hr>
+<p>
+    <a href="search.html">[1] Search for an item</a>
+</p>
 
+<p>
+    <a href="report.html">[2] Report a lost/found item</a>
+</p>
 
-    <h2>Menu</h2>
+<p>
+    <a href="latest.html">[3] View Latest Items</a>
+</p>
 
-   <p><a href="search.html">[1] Search for an item</a></p>
-<p><a href="report.html">[2] Report a lost/found item</a></p>
-<p><a href="latest.html">[3] View Latest Items</a></p>
-<p><a href="admin.html">[4] Admin login</a></p>
+<p>
+    <a href="admin.html">[4] Admin login</a>
+</p>
 
-
-    <hr>
-
+<hr>
 
 <h2>Recently Found Items</h2>
 
-    <div id="latestItems">
-        Loading...
-    </div>
+<div id="latestItems">
+    Loading...
+</div>
 
-    <a href="latest.html">
-        View all latest items →
-    </a>
+<p>
+    <a href="latest.html">View all latest items →</a>
+</p>
 
+<div class="version-label">
+    V.Prototype
+</div>
 
-    <script src="script.js"></script>
-
-
-    <div class="version-label">
-        V.Prototype
-    </div>
-
+<script src="script.js"></script>
+```
 
 </body>
 
