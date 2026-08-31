@@ -273,8 +273,8 @@ function adminLogin() {
 
 
     if (
-        username === "admin" &&
-        password === "1234"
+        username === "LostLink ADMN" &&
+        password === "EB31A"
     ) {
 
         window.location.href =

@@ -4,7 +4,6 @@
 
 <head>
 
-```
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Report Item - PRJ LostLink</title>
@@ -23,36 +22,10 @@
         font-family: Arial, sans-serif;
     }
 
-    input,
-    textarea,
-    button {
-        width: 100%;
-        max-width: 100%;
-        font-size: 16px;
-    }
-
-    input,
-    textarea {
-        padding: 12px;
-        margin-bottom: 12px;
-    }
-
-    textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    button {
-        min-height: 44px;
-        padding: 10px 16px;
-    }
-
     @media (max-width: 600px) {
-
         body {
             padding: 12px;
         }
-
     }
 
     .version-label {
@@ -64,13 +37,11 @@
     }
 
 </style>
-```
 
 </head>
 
 <body>
 
-```
 <h1>PRJ LostLink</h1>
 
 <p>Report a lost or found item.</p>
@@ -78,74 +49,25 @@
 <hr>
 
 
+<h2>Report an Item</h2>
+
+<p>
+    Click the link below to open the report form:
+</p>
+
+<p>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdjmCGYl_BlAd7tXyWs6W6go0oQRUPD14rmbxW1Y6hBBtdBGQ/viewform?usp=header" target="_blank">
+        Open Lost & Found Report Form
+    </a>
+</p>
+
 <p>
     <a href="index.html">← Back to Home</a>
 </p>
 
-
-<h2>Report Item</h2>
-
-
-<label for="itemName">
-    Item name
-</label>
-
-<input
-    type="text"
-    id="itemName"
-    placeholder="Example: Black wallet"
->
-
-
-<label for="description">
-    Description
-</label>
-
-<textarea
-    id="description"
-    placeholder="Describe the item"
-></textarea>
-
-
-<label for="location">
-    Location found
-</label>
-
-<input
-    type="text"
-    id="location"
-    placeholder="Example: Gym"
->
-
-
-<label for="date">
-    Date found
-</label>
-
-<input
-    type="date"
-    id="date"
->
-
-
-<button
-    type="button"
-    onclick="submitItem()"
->
-    Submit Report
-</button>
-
-
-<p id="message"></p>
-
-
 <div class="version-label">
-    V.Prototype
+    Alpha Prototype
 </div>
-
-
-<script src="script.js"></script>
-```
 
 </body>
 

@@ -4,10 +4,9 @@
 
 <head>
 
-```
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>PRJ LostLink</title>
+<title>Search - PRJ LostLink</title>
 
 <style>
 
@@ -20,24 +19,21 @@
         padding: 16px;
         width: 100%;
         overflow-x: hidden;
+        font-family: Arial, sans-serif;
     }
 
-    input,
-    textarea,
-    select,
-    button {
-        max-width: 100%;
+    input {
+        width: 70%;
+        max-width: 400px;
+        padding: 10px;
+        margin-bottom: 10px;
         font-size: 16px;
     }
 
     button {
-        min-height: 44px;
         padding: 10px 16px;
-    }
-
-    img {
-        max-width: 100%;
-        height: auto;
+        min-height: 44px;
+        font-size: 16px;
     }
 
     @media (max-width: 600px) {
@@ -46,18 +42,15 @@
             padding: 12px;
         }
 
-        input,
-        textarea,
-        select,
+        input {
+            width: 100%;
+            max-width: none;
+        }
+
         button {
             width: 100%;
         }
 
-    }
-
-    html {
-        scroll-behavior: auto;
-        scroll-padding-top: 0;
     }
 
     .version-label {
@@ -69,70 +62,49 @@
     }
 
 </style>
-```
 
 </head>
 
 <body>
 
-```
 <h1>PRJ LostLink</h1>
 
-<p>Student Lost & Found System</p>
+<p>Search for a lost or found item.</p>
 
 <hr>
 
+<h2>Search</h2>
 
-<h2>Menu</h2>
+<input
+    type="text"
+    id="searchBox"
+    placeholder="Enter item name, description, or location"
+>
 
-<p>
-    <a href="search.html">
-        [1] Search for an item
-    </a>
-</p>
+<br>
 
-<p>
-    <a href="report.html">
-        [2] Report a lost/found item
-    </a>
-</p>
-
-<p>
-    <a href="latest.html">
-        [3] View Latest Items
-    </a>
-</p>
-
-<p>
-    <a href="admin.html">
-        [4] Admin login
-    </a>
-</p>
-
+<button
+    type="button"
+    onclick="searchItem()"
+>
+    Search
+</button>
 
 <hr>
 
-
-<h2>Recently Found Items</h2>
-
-<div id="latestItems">
-    Loading...
+<div id="results">
+    Enter a search term above.
 </div>
 
 <p>
-    <a href="latest.html">
-        View all latest items →
-    </a>
+    <a href="index.html">← Back to Home</a>
 </p>
-
-
-<script src="script.js"></script>
-
 
 <div class="version-label">
-    V.Prototype
+    Alpha Prototype
 </div>
-```
+
+<script src="script.js"></script>
 
 </body>
 
