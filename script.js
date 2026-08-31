@@ -3,6 +3,21 @@
 // ========================================
 
 
+
+// ========================================
+// PAGE SCROLL POSITION
+// ========================================
+
+// Prevent browser from restoring an old scroll position
+if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+}
+
+// Always open the page at the top
+window.addEventListener("pageshow", function () {
+    window.scrollTo(0, 0);
+});
+
 // ========================================
 // GOOGLE SHEET
 // ========================================
