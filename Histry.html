@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LostLink Network System</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: auto;
+        overflow-anchor: none;
+    }
+
+    body {
+        margin: 0;
+        padding: 16px;
+        width: 100%;
+        overflow-x: hidden;
+        font-family: Arial, sans-serif;
+    }
+
+    @media (max-width: 600px) {
+        body {
+            padding: 12px;
+        }
+    }
+
+    .version-label {
+        text-align: center;
+        margin-top: 30px;
+        padding: 10px;
+        font-size: 12px;
+        opacity: 0.6;
+    }
+
+</style>
+
+<script>
+
+    // Prevent mobile browsers from restoring an old scroll position
+    if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+    }
+
+</script>
+
+</head>
+
+<body>
+
+<h1>LostLink NTW</h1>
+
+<p>System Histry</p>
+<p></p>
+<hr>
+<p><u>Warning: This page only supports English</u></p>
+<hr>
+<div class="info-group">
+    <p><u>V. Prototype:</u></p>
+    <p>Included features: Search, Report</p>
+</div>
+
+<style>
+    .info-group p {
+        margin: 0;
+    }
+
+    .info-group + .info-group {
+        margin-top: 15px;
+    }
+</style>
+
+<hr>
+
+<div class="info-group">
+    <p><u>Alpha Prototype:</u></p>
+    <p>Included features: Search, Report, View </p>
+</div>
+
+<style>
+    h1 {
+        margin-bottom: 0;
+    }
+
+    p {
+        margin-top: 0;
+    }
+</style>
+</div>
+
+<hr>
+<div class="info-group">
+    <p><u>Beta Prototype 1.0.0:</u></p>
+    <p>Included features: All above and Language option and smoother experience. </p>
+</div>
+
+<hr>
+
+<div class="info-group">
+    <p><u>Official Release Model V.1.0:</u></p>
+    <p>coming soon</p>
+</div>
+
+<hr>
+
+<p>
+    <a href="index.html">← Back to Home</a>
+</p>
+
+<div class="version-label">
+   Beta Prototype 1.0.0
+</div>
+
+<script src="script.js"></script>
+
+<script>
+
+    // Force the homepage to the top after everything has loaded
+    window.addEventListener("load", function () {
+
+        setTimeout(function () {
+
+            window.scrollTo(0, 0);
+
+        }, 100);
+
+    });
+
+</script>
+
+</body>
+
+</html>

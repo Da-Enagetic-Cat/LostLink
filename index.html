@@ -4,6 +4,8 @@
 
 <head>
 
+<meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>LostLink Network System</title>
@@ -40,13 +42,59 @@
         }
     }
 
-    .powered-by p {
-        margin: 0 0 10px 0;
+    /* ================================
+       TOP BAR
+       ================================ */
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
     }
 
-    .powered-by h1 {
-        margin: 0;
+    .nexus {
+        text-align: left;
     }
+
+    .nexus h1 {
+        margin: 0;
+        line-height: 1.1;
+    }
+
+    .nexus p {
+        margin: 0;
+        line-height: 1.1;
+    }
+
+    /* ================================
+       LANGUAGE BUTTONS
+       ================================ */
+
+    .language-box {
+        display: flex;
+        border: 1px solid black;
+        margin-left: 10px;
+        overflow: hidden;
+    }
+
+    .language-box button {
+        border: none;
+        background: white;
+        color: black;
+        padding: 6px 10px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .language-box button.selected {
+        background: rgba(25, 118, 210, 0.25);
+        color: black;
+    }
+
+    /* ================================
+       VERSION
+       ================================ */
 
     .version-label {
         text-align: center;
@@ -56,18 +104,11 @@
         opacity: 0.6;
     }
 
-    /* The absolute top of the homepage */
-    #top {
-        position: relative;
-        top: 0;
-        margin-top: 0;
-    }
-
 </style>
 
 <script>
 
-    // Prevent mobile browsers from restoring an old scroll position
+    // Prevent browser from restoring an old scroll position
     if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
     }
@@ -76,48 +117,92 @@
 
 </head>
 
-<body id="top">
+<body>
 
-<h1>LostLink Network System</h1>
+<!-- ================================
+     TOP BAR
+     ================================ -->
 
-<p>Student Lost & Found System</p>
+<div class="top-bar">
+
+<div class="nexus">
+
+    <h1>LostLink NTW</h1>
+
+    <p id="subTitle">Student Lost & Found System</p>
+
+</div>
+
+<div class="language-box">
+
+    <button id="enButton" onclick="setLanguage('EN')">
+        EN
+    </button>
+
+    <button id="jpButton" onclick="setLanguage('JP')">
+        JP
+    </button>
+
+</div>
+
+</div>
 
 <hr>
 
-<h2>Menu</h2>
+<h2 id="menuTitle">Menu</h2>
 
 <p>
-    <a href="search.html">[1] Search for an item</a>
+    <a href="search.html" id="menuSearch">[1] Search for an item</a>
 </p>
 
 <p>
-    <a href="report.html">[2] Report a lost/found item</a>
+    <a href="report.html" id="menuReport">[2] Report a lost/found item</a>
 </p>
 
 <p>
-    <a href="latest.html">[3] View Latest Items</a>
+    <a href="latest.html" id="menuLatest">[3] View Latest Items</a>
 </p>
 
 <hr>
 
-<h2>Recently Found Items</h2>
+<h2 id="recentTitle">Recently Found Items</h2>
 
 <div id="latestItems">
-    <p>Loading...</p>
+
+<p id="loadingText">Loading...</p>
+
 </div>
 
 <p>
-    <a href="latest.html">View all latest items →</a>
+
+<a href="latest.html" id="viewAllLink">
+    View all latest items →
+</a>
+
 </p>
 
 <hr>
 
 <p>
-    <a href="DEV.html">System Description</a>
+
+<a href="DEV.html" id="systemDescLink">
+    System Description
+</a>
+
+</p>
+
+<p>
+
+<a href="Histry.html" id="systemDescLink">
+    System Histry
+</a>
+
 </p>
 
 <div class="version-label">
-    Alpha Prototype
+
+BETA Prototype 1.0.0
+
 </div>
 
 <script src="script.js"></script>

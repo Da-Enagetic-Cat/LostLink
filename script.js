@@ -3,6 +3,21 @@
 // ========================================
 
 
+
+// ========================================
+// PAGE SCROLL POSITION
+// ========================================
+
+// Prevent browser from restoring an old scroll position
+if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+}
+
+// Always open the page at the top
+window.addEventListener("pageshow", function () {
+    window.scrollTo(0, 0);
+});
+
 // ========================================
 // GOOGLE SHEET
 // ========================================
@@ -25,10 +40,15 @@ function saveItems(items) {
 
 
 // ========================================
-// LOAD GOOGLE SHEET
+// LOAD GOOGLE SHEET (WITH CACHING)
 // ========================================
 
 async function getGoogleSheetItems() {
+
+    const cachedData = sessionStorage.getItem("lostlinkSheetCache");
+    if (cachedData) {
+        return JSON.parse(cachedData);
+    }
 
     const response = await fetch(sheetURL);
 
@@ -48,7 +68,7 @@ async function getGoogleSheetItems() {
         header.trim()
     );
 
-    return rows.slice(1).map(row => {
+    const items = rows.slice(1).map(row => {
 
         let item = {};
 
@@ -58,6 +78,10 @@ async function getGoogleSheetItems() {
 
         return item;
     });
+
+    sessionStorage.setItem("lostlinkSheetCache", JSON.stringify(items));
+
+    return items;
 }
 
 
@@ -83,7 +107,7 @@ async function searchItem() {
     if (keyword === "") {
 
         resultsBox.innerText =
-            "Please enter a search term.";
+            "Please enter a search term above.";
 
         return;
     }
@@ -138,9 +162,6 @@ async function searchItem() {
         resultsBox.innerHTML =
             results.map(item => {
 
-                const photo =
-                    String(item["Photo"] || "").trim();
-
                 return `
                     <div>
 
@@ -156,18 +177,6 @@ async function searchItem() {
                         ${escapeHTML(
                             item["Descption"] || ""
                         )}
-
-                        ${photo ? `
-                            <br><br>
-                            Photo:
-                            <a
-                                href="${escapeHTML(photo)}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                View Photo
-                            </a>
-                        ` : ""}
 
                         <br>
 
@@ -422,110 +431,98 @@ function rejectItem(id) {
 }
 
 
+
+// ========================================
+// FAST TRANSLATION CACHE & HELPER
+// ========================================
+
+const translationCache = {};
+
+async function translateText(text, targetLang) {
+    if (!text || targetLang === "EN") return text;
+    
+    const cacheKey = `${targetLang}_${text}`;
+    if (translationCache[cacheKey]) {
+        return translationCache[cacheKey];
+    }
+
+    try {
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=` + encodeURIComponent(text);
+        const res = await fetch(url);
+        const data = await res.json();
+        const translated = data[0].map(item => item[0]).join("");
+        
+        translationCache[cacheKey] = translated;
+        return translated;
+    } catch (e) {
+        return text;
+    }
+}
+
+
+
 // ========================================
 // RECENTLY FOUND ITEMS - HOMEPAGE
 // ========================================
 
 async function loadLatestItems() {
+    const container = document.getElementById("latestItems");
+    if (!container) return;
 
-    const container =
-        document.getElementById("latestItems");
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML =
-        "Loading...";
+    container.innerHTML = language === "JP" ? "読み込み中..." : "Loading...";
 
     try {
-
-        const items =
-            await getGoogleSheetItems();
-
-
-        const approved =
-            items.filter(item =>
-                String(item["Status"])
-                    .trim()
-                    .toLowerCase() === "approved"
-            );
-
-
-        approved.sort((a, b) =>
-            new Date(b["Timestamp"]) -
-            new Date(a["Timestamp"])
+        const items = await getGoogleSheetItems();
+        const approved = items.filter(item =>
+            String(item["Status"]).trim().toLowerCase() === "approved"
         );
 
-
-        const recent =
-            approved.slice(0, 3);
-
+        approved.sort((a, b) => new Date(b["Timestamp"]) - new Date(a["Timestamp"]));
+        const recent = approved.slice(0, 3);
 
         if (recent.length === 0) {
-
-            container.innerHTML =
-                "<p>No approved items yet.</p>";
-
+            container.innerHTML = language === "JP" ? "<p>承認されたアイテムはありません。</p>" : "<p>No approved items yet.</p>";
             return;
         }
 
+        const targetLang = language === "JP" ? "ja" : "EN";
+        let htmlCards = "";
 
-        // Main page intentionally has NO photo link
-        container.innerHTML =
-            recent.map(item => {
+        for (const item of recent) {
+            let itemName = item["Item name"] || "Unknown item";
+            let description = item["Descption"] || "No description";
+            let location = item["Location found"] || "Unknown";
+            let date = item["Date"] || "Unknown";
 
-                return `
-                    <div>
+            if (targetLang === "ja") {
+                itemName = await translateText(itemName, "ja");
+                description = await translateText(description, "ja");
+                location = await translateText(location, "ja");
+            }
 
-                        <strong>
-                            ${escapeHTML(
-                                item["Item name"] ||
-                                "Unknown item"
-                            )}
-                        </strong>
+            const descLabel = language === "JP" ? "説明:" : "Description:";
+            const locLabel = language === "JP" ? "場所:" : "Location:";
+            const dateLabel = language === "JP" ? "日付:" : "Date:";
 
-                        <br><br>
+            htmlCards += `
+                <div>
+                    <strong>${escapeHTML(itemName)}</strong>
+                    <br><br>
+                    ${descLabel} ${escapeHTML(description)}
+                    <br>
+                    ${locLabel} ${escapeHTML(location)}
+                    <br>
+                    ${dateLabel} ${escapeHTML(date)}
+                </div>
+                <hr>
+            `;
+        }
 
-                        Description:
-                        ${escapeHTML(
-                            item["Descption"] ||
-                            "No description"
-                        )}
-
-                        <br>
-
-                        Location:
-                        ${escapeHTML(
-                            item["Location found"] ||
-                            "Unknown"
-                        )}
-
-                        <br>
-
-                        Date:
-                        ${escapeHTML(
-                            item["Date"] ||
-                            "Unknown"
-                        )}
-
-                    </div>
-
-                    <hr>
-                `;
-
-            }).join("");
-
+        container.innerHTML = htmlCards;
 
     } catch (error) {
-
-        console.error(
-            "Google Sheet error:",
-            error
-        );
-
-        container.innerHTML =
-            "<p>Unable to load recently found items.</p>";
+        console.error("Google Sheet error:", error);
+        container.innerHTML = language === "JP" ? "<p>最近見つかったアイテムを読み込めませんでした。</p>" : "<p>Unable to load recently found items.</p>";
     }
 }
 
@@ -535,115 +532,62 @@ async function loadLatestItems() {
 // ========================================
 
 async function loadAllLatestItems() {
+    const container = document.getElementById("allLatestItems");
+    if (!container) return;
 
-    const container =
-        document.getElementById("allLatestItems");
-
-    if (!container) {
-        return;
-    }
-
-    container.innerHTML =
-        "Loading...";
+    container.innerHTML = language === "JP" ? "読み込み中..." : "Loading...";
 
     try {
-
-        const items =
-            await getGoogleSheetItems();
-
-
-        const approved =
-            items.filter(item =>
-                String(item["Status"])
-                    .trim()
-                    .toLowerCase() === "approved"
-            );
-
-
-        approved.sort((a, b) =>
-            new Date(b["Timestamp"]) -
-            new Date(a["Timestamp"])
+        const items = await getGoogleSheetItems();
+        const approved = items.filter(item =>
+            String(item["Status"]).trim().toLowerCase() === "approved"
         );
 
+        approved.sort((a, b) => new Date(b["Timestamp"]) - new Date(a["Timestamp"]));
 
         if (approved.length === 0) {
-
-            container.innerHTML =
-                "<p>No approved items yet.</p>";
-
+            container.innerHTML = language === "JP" ? "<p>承認されたアイテムはありません。</p>" : "<p>No approved items yet.</p>";
             return;
         }
 
+        const targetLang = language === "JP" ? "ja" : "EN";
+        let htmlCards = "";
 
-        container.innerHTML =
-            approved.map(item => {
+        for (const item of approved) {
+            let itemName = item["Item name"] || "Unknown item";
+            let description = item["Descption"] || "No description";
+            let location = item["Location found"] || "Unknown";
+            let date = item["Date"] || "Unknown";
 
-                const photo =
-                    String(item["Photo"] || "").trim();
+            if (targetLang === "ja") {
+                itemName = await translateText(itemName, "ja");
+                description = await translateText(description, "ja");
+                location = await translateText(location, "ja");
+            }
 
-                return `
-                    <div>
+            const descLabel = language === "JP" ? "説明:" : "Description:";
+            const locLabel = language === "JP" ? "場所:" : "Location:";
+            const dateLabel = language === "JP" ? "日付:" : "Date:";
 
-                        <strong>
-                            ${escapeHTML(
-                                item["Item name"] ||
-                                "Unknown item"
-                            )}
-                        </strong>
+            htmlCards += `
+                <div>
+                    <strong>${escapeHTML(itemName)}</strong>
+                    <br><br>
+                    ${descLabel} ${escapeHTML(description)}
+                    <br>
+                    ${locLabel} ${escapeHTML(location)}
+                    <br>
+                    ${dateLabel} ${escapeHTML(date)}
+                </div>
+                <hr>
+            `;
+        }
 
-                        <br><br>
-
-                        Description:
-                        ${escapeHTML(
-                            item["Descption"] ||
-                            "No description"
-                        )}
-
-                        ${photo ? `
-                            <br><br>
-                            Photo:
-                            <a
-                                href="${escapeHTML(photo)}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                View Photo
-                            </a>
-                        ` : ""}
-
-                        <br>
-
-                        Location:
-                        ${escapeHTML(
-                            item["Location found"] ||
-                            "Unknown"
-                        )}
-
-                        <br>
-
-                        Date:
-                        ${escapeHTML(
-                            item["Date"] ||
-                            "Unknown"
-                        )}
-
-                    </div>
-
-                    <hr>
-                `;
-
-            }).join("");
-
+        container.innerHTML = htmlCards;
 
     } catch (error) {
-
-        console.error(
-            "Latest items error:",
-            error
-        );
-
-        container.innerHTML =
-            "<p>Unable to load latest items.</p>";
+        console.error("Latest items error:", error);
+        container.innerHTML = language === "JP" ? "<p>最新アイテムを読み込めませんでした。</p>" : "<p>Unable to load latest items.</p>";
     }
 }
 
@@ -771,36 +715,173 @@ function escapeHTML(value) {
 }
 
 
+
+// ========================================
+// LANGUAGE - EN / JP
+// ========================================
+
+let language =
+    localStorage.getItem("lostlinkLanguage") || "EN";
+
+function setLanguage(selectedLanguage) {
+
+    language = selectedLanguage;
+
+    localStorage.setItem(
+        "lostlinkLanguage",
+        language
+    );
+
+    updateLanguageButtons();
+    applyTranslations();
+
+    if (typeof loadLatestItems === "function") loadLatestItems();
+    if (typeof loadAllLatestItems === "function") loadAllLatestItems();
+}
+
+function updateLanguageButtons() {
+
+    const enButton =
+        document.getElementById("enButton");
+
+    const jpButton =
+        document.getElementById("jpButton");
+
+    if (!enButton || !jpButton) {
+        return;
+    }
+
+    enButton.classList.remove("selected");
+    jpButton.classList.remove("selected");
+
+    if (language === "EN") {
+        enButton.classList.add("selected");
+    } else {
+        jpButton.classList.add("selected");
+    }
+}
+
+updateLanguageButtons();
+
+
+// ========================================
+// TRANSLATIONS DICTIONARY & APPLIER
+// ========================================
+
+const translations = {
+    EN: {
+        // Index / General
+        subTitle: "Student Lost & Found System",
+        menuTitle: "Menu",
+        menuSearch: "[1] Search for an item",
+        menuReport: "[2] Report a lost/found item",
+        menuLatest: "[3] View Latest Items",
+        recentTitle: "Recently Found Items",
+        loadingText: "Loading...",
+        viewAllLink: "View all latest items →",
+        systemDescLink: "System Description",
+        
+        // DEV.html
+        pageTitle: "LostLink NTW",
+        pageSubtitle: "System Description",
+        creatorLabel: "Creator and Maintainer (Nickname):",
+        ownerLabel: "System Owned by:",
+        poweredLabel: "This System is Powered by",
+        githubTitle: "Git-Hub (temporary)",
+        warningText: "WARNING: This system tend to have technical errors with Google Chrome (MOBILE).",
+        browserText: "DEFAULT BROWSER IS RECOMMENDED",
+        backHome: "← Back to Home",
+
+        // latest.html
+        latestTitle: "Latest Items",
+
+        // report.html
+        reportTitle: "Report an Item",
+        reportInstruction: "Click the link below to open the report form:",
+        reportFormLink: "Open Lost & Found Report Form",
+
+        // search.html
+        searchTitle: "Search",
+        searchButton: "Search",
+        searchPlaceholder: "Enter item name, description, or location",
+        searchResultsDefault: "Enter a search term above."
+    },
+    JP: {
+        // Index / General
+        subTitle: "生徒 忘れ物・落とし物システム",
+        menuTitle: "メニュー",
+        menuSearch: "[1] アイテムを検索する",
+        menuReport: "[2] 落とし物・拾得物を報告する",
+        menuLatest: "[3] 最新のアイテムを見る",
+        recentTitle: "最近見つかったアイテム",
+        loadingText: "読み込み中...",
+        viewAllLink: "すべての最新アイテムを見る →",
+        systemDescLink: "システム説明",
+        
+        // DEV.html
+        pageTitle: "LostLink NTW",
+        pageSubtitle: "システム説明",
+        creatorLabel: "作成者および維持管理者のニックネーム：",
+        ownerLabel: "システム所有者：",
+        poweredLabel: "このシステムは次世代の技術で駆動しています",
+        githubTitle: "GitHub（一時的）",
+        warningText: "警告：このシステムはGoogle Chrome（モバイル）で技術的なエラーが発生します。",
+        browserText: "デフォルトブラウザの使用をお勧めします",
+        backHome: "← ホームに戻る",
+
+        // latest.html
+        latestTitle: "最新のアイテム",
+
+        // report.html
+        reportTitle: "アイテムを報告する",
+        reportInstruction: "レポートフォームを開くには、以下のリンクをクリックしてください：",
+        reportFormLink: "忘れ物・落とし物レポートフォームを開く",
+
+        // search.html
+        searchTitle: "検索",
+        searchButton: "検索する",
+        searchPlaceholder: "アイテム名、説明、または場所を入力してください",
+        searchResultsDefault: "上に検索語を入力してください。"
+    }
+};
+
+function applyTranslations() {
+    const t = translations[language];
+    if (!t) return;
+
+    for (const key in t) {
+        const el = document.getElementById(key);
+        if (el) {
+            if (el.tagName === "INPUT" && key === "searchPlaceholder") {
+                el.placeholder = t[key];
+            } else {
+                el.innerText = t[key];
+            }
+        }
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    updateLanguageButtons();
+    applyTranslations();
+});
+
+
 // ========================================
 // START FUNCTIONS
 // ========================================
 
-
 // Admin dashboard
-
-if (
-    document.getElementById("pendingItems")
-) {
-
+if (document.getElementById("pendingItems")) {
     loadAdminItems();
 }
 
-
 // Homepage
-
-if (
-    document.getElementById("latestItems")
-) {
-
+if (document.getElementById("latestItems")) {
     loadLatestItems();
 }
 
-
 // Full latest items page
-
-if (
-    document.getElementById("allLatestItems")
-) {
-
+if (document.getElementById("allLatestItems")) {
     loadAllLatestItems();
 }
