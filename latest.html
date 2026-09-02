@@ -7,103 +7,109 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
+   content="width=device-width, initial-scale=1.0">
 
 <title>Latest Items - PRJ LostLink</title>
 
 <style>
 
-    * {
-        box-sizing: border-box;
-    }
+* {
+    box-sizing: border-box;
+}
 
+body {
+    margin: 0;
+    padding: 16px;
+    width: 100%;
+    overflow-x: hidden;
+    font-family: Arial, sans-serif;
+}
+
+@media (max-width: 600px) {
     body {
-        margin: 0;
-        padding: 16px;
-        width: 100%;
-        overflow-x: hidden;
-        font-family: Arial, sans-serif;
+        padding: 12px;
     }
+}
 
-    @media (max-width: 600px) {
-        body {
-            padding: 12px;
-        }
-    }
+/* ================================
+   TOP BAR
+   ================================ */
 
-    /* ================================
-       TOP BAR
-       ================================ */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
 
-    .top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-    }
+.nexus {
+    text-align: left;
+}
 
-    .nexus {
-        text-align: left;
-    }
+.nexus h1 {
+    margin: 0;
+    line-height: 1.1;
+}
 
-    .nexus h1 {
-        margin: 0;
-        line-height: 1.1;
-    }
+.nexus p {
+    margin: 0;
+    line-height: 1.1;
+}
 
-    .nexus p {
-        margin: 0;
-        line-height: 1.1;
-    }
+/* ================================
+   LANGUAGE BUTTONS
+   ================================ */
 
-    /* ================================
-       LANGUAGE BUTTONS
-       ================================ */
+.language-box {
+    display: flex;
+    border: 1px solid black;
+    margin-left: 10px;
+    overflow: hidden;
+}
 
-    .language-box {
-        display: flex;
-        border: 1px solid black;
-        margin-left: 10px;
-        overflow: hidden;
-    }
+.language-box button {
+    border: none;
+    background: white;
+    color: black;
+    padding: 6px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
 
-    .language-box button {
-        border: none;
-        background: white;
-        color: black;
-        padding: 6px 10px;
-        font-size: 14px;
-        cursor: pointer;
-    }
+.language-box button.selected {
+    background: rgba(25, 118, 210, 0.25);
+    color: black;
+}
 
-    .language-box button.selected {
-        background: rgba(25, 118, 210, 0.25);
-        color: black;
-    }
+/* ================================
+   ITEM PHOTO
+   ================================ */
 
-    /* ================================
-       ITEM PHOTO
-       ================================ */
+.item-photo {
+    max-width: 250px;
+    max-height: 250px;
+    width: auto;
+    height: auto;
+    display: block;
+    margin-top: 10px;
+}
 
-    .item-photo {
-        max-width: 100%;
-        height: auto;
-        display: block;
-        margin-top: 8px;
-        border-radius: 4px;
-    }
+.photo-link {
+    display: inline-block;
+    margin-top: 8px;
+}
 
-    /* ================================
-       VERSION
-       ================================ */
+/* ================================
+   VERSION
+   ================================ */
 
-    .version-label {
-        text-align: center;
-        margin-top: 30px;
-        padding: 10px;
-        font-size: 12px;
-        opacity: 0.6;
-    }
+.version-label {
+    text-align: center;
+    margin-top: 30px;
+    padding: 10px;
+    font-size: 12px;
+    opacity: 0.6;
+}
 
 </style>
 
@@ -117,27 +123,29 @@
 
 <div class="top-bar">
 
-    <div class="nexus">
+```
+<div class="nexus">
 
-        <h1 id="pageTitle">
-            LostLink NTW
-        </h1>
+    <h1 id="pageTitle">
+        LostLink NTW
+    </h1>
 
-    </div>
+</div>
 
-    <div class="language-box">
+<div class="language-box">
 
-        <button id="enButton"
+    <button id="enButton"
             onclick="setLanguage('EN')">
-            EN
-        </button>
+        EN
+    </button>
 
-        <button id="jpButton"
+    <button id="jpButton"
             onclick="setLanguage('JP')">
-            JP
-        </button>
+        JP
+    </button>
 
-    </div>
+</div>
+```
 
 </div>
 
@@ -162,6 +170,154 @@
 <div class="version-label">
     BETA Prototype 1.0.0
 </div>
+
+<script>
+
+/* ========================================
+   ADD PHOTO LINKS TO LATEST ITEMS
+   ======================================== */
+
+async function loadLatestPageWithPhotos() {
+
+    const container =
+        document.getElementById("allLatestItems");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "Loading...";
+
+    try {
+
+        const items =
+            await getGoogleSheetItems();
+
+        const approved =
+            items.filter(item =>
+                String(item["Status"])
+                    .trim()
+                    .toLowerCase() === "approved"
+            );
+
+
+        approved.sort((a, b) =>
+            new Date(b["Timestamp"]) -
+            new Date(a["Timestamp"])
+        );
+
+
+        if (approved.length === 0) {
+
+            container.innerHTML =
+                "<p>No approved items yet.</p>";
+
+            return;
+        }
+
+
+        container.innerHTML =
+            approved.map(item => {
+
+                const photo =
+                    String(
+                        item["Photo"] || ""
+                    ).trim();
+
+
+                let photoHTML = "";
+
+
+                if (photo !== "") {
+
+                    photoHTML = `
+                        <br>
+
+                        <a
+                            class="photo-link"
+                            href="${escapeHTML(photo)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            View Photo
+                        </a>
+
+                        <br>
+
+                        <img
+                            class="item-photo"
+                            src="${escapeHTML(photo)}"
+                            alt="Item photo"
+                            loading="lazy"
+                            onerror="this.style.display='none'"
+                        >
+                    `;
+
+                }
+
+
+                return `
+                    <div>
+
+                        <strong>
+                            ${escapeHTML(
+                                item["Item name"] ||
+                                "Unknown item"
+                            )}
+                        </strong>
+
+                        <br><br>
+
+                        Description:
+                        ${escapeHTML(
+                            item["Descption"] ||
+                            "No description"
+                        )}
+
+                        ${photoHTML}
+
+                        <br>
+
+                        Location:
+                        ${escapeHTML(
+                            item["Location found"] ||
+                            "Unknown"
+                        )}
+
+                        <br>
+
+                        Date:
+                        ${escapeHTML(
+                            item["Date"] ||
+                            "Unknown"
+                        )}
+
+                    </div>
+
+                    <hr>
+                `;
+
+            }).join("");
+
+
+    } catch (error) {
+
+        console.error(
+            "Latest items error:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Unable to load latest items.</p>";
+    }
+}
+
+
+/* Start the page */
+
+loadLatestPageWithPhotos();
+
+</script>
 
 </body>
 
