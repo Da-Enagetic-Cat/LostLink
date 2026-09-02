@@ -811,17 +811,17 @@ const translations = {
         subTitle: "生徒 忘れ物・落とし物システム",
         menuTitle: "メニュー",
         menuSearch: "[1] アイテムを検索する",
-        menuReport: "[2] 落とし物・拾得物を報告する",
-        menuLatest: "[3] 最新のアイテムを見る",
-        recentTitle: "最近見つかったアイテム",
+        menuReport: "[2] 落とし物を報告する",
+        menuLatest: "[3] 報告された落とし物を閲覧する",
+        recentTitle: "最近報告された落とし物",
         loadingText: "読み込み中...",
-        viewAllLink: "すべての最新アイテムを見る →",
-        systemDescLink: "システム説明",
+        viewAllLink: "すべての報告された落し物を見る →",
+        systemDescLink: "システム詳細",
         
         // DEV.html
         pageTitle: "LostLink NTW",
-        pageSubtitle: "システム説明",
-        creatorLabel: "作成者および維持管理者のニックネーム：",
+        pageSubtitle: "システム"詳細",
+        creatorLabel: "本サイトの持管理者のニックネーム：",
         ownerLabel: "システム所有者：",
         poweredLabel: "このシステムは次世代の技術で駆動しています",
         githubTitle: "GitHub（一時的）",
@@ -830,11 +830,11 @@ const translations = {
         backHome: "← ホームに戻る",
 
         // latest.html
-        latestTitle: "最新のアイテム",
+        latestTitle: "最近発見された落とし物",
 
         // report.html
-        reportTitle: "アイテムを報告する",
-        reportInstruction: "レポートフォームを開くには、以下のリンクをクリックしてください：",
+        reportTitle: "落とし物を報告する",
+        reportInstruction: "落とし物を報告するには、以下のリンクをクリックしてください：",
         reportFormLink: "忘れ物・落とし物レポートフォームを開く",
 
         // search.html
