@@ -820,7 +820,7 @@ const translations = {
         
         // DEV.html
         pageTitle: "LostLink NTW",
-        pageSubtitle: "システム"詳細",
+        pageSubtitle: "システム詳細",
         creatorLabel: "本サイトの持管理者のニックネーム：",
         ownerLabel: "システム所有者：",
         poweredLabel: "このシステムは次世代の技術で駆動しています",
