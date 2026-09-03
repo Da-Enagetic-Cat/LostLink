@@ -599,9 +599,6 @@ async function loadLatestItems() {
                 cleanText(item["Date"]) ||
                 "Unknown";
 
-            const photo =
-                cleanText(item["Photo"]);
-
             if (targetLang === "ja") {
 
                 itemName =
@@ -659,39 +656,6 @@ async function loadLatestItems() {
 
                     ${dateLabel}
                     ${escapeHTML(date)}
-
-                    ${
-                        photo
-                            ? `
-                                <br><br>
-
-                                <img
-                                    src="${escapeHTML(photo)}"
-                                    alt="Item photo"
-                                    loading="lazy"
-                                    style="
-                                        max-width:300px;
-                                        width:100%;
-                                        height:auto;
-                                        border-radius:8px;
-                                    "
-                                    onerror="this.style.display='none';"
-                                >
-
-                                <br>
-
-                                <a
-                                    href="${escapeHTML(photo)}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    ${language === "JP"
-                                        ? "写真を見る"
-                                        : "View Photo"}
-                                </a>
-                            `
-                            : ""
-                    }
 
                 </div>
 
@@ -834,7 +798,24 @@ async function loadAllLatestItems() {
                         ${escapeHTML(itemName)}
                     </strong>
 
-                    <br><br>
+                    <br>
+
+                    ${
+                        photo
+                            ? `
+                                <a
+                                    href="${escapeHTML(photo)}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    ${language === "JP"
+                                        ? "写真を見る"
+                                        : "View Photo"}
+                                </a>
+                                <br>
+                            `
+                            : ""
+                    }
 
                     ${descLabel}
                     ${escapeHTML(description)}
@@ -848,39 +829,6 @@ async function loadAllLatestItems() {
 
                     ${dateLabel}
                     ${escapeHTML(date)}
-
-                    ${
-                        photo
-                            ? `
-                                <br><br>
-
-                                <img
-                                    src="${escapeHTML(photo)}"
-                                    alt="Item photo"
-                                    loading="lazy"
-                                    style="
-                                        max-width:300px;
-                                        width:100%;
-                                        height:auto;
-                                        border-radius:8px;
-                                    "
-                                    onerror="this.style.display='none';"
-                                >
-
-                                <br>
-
-                                <a
-                                    href="${escapeHTML(photo)}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    ${language === "JP"
-                                        ? "写真を見る"
-                                        : "View Photo"}
-                                </a>
-                            `
-                            : ""
-                    }
 
                 </div>
 
