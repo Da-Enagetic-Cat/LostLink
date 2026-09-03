@@ -42,12 +42,8 @@ function saveItems(items) {
 
 async function getGoogleSheetItems() {
 
-<<<<<<< HEAD
     const cachedData =
         sessionStorage.getItem("lostlinkSheetCache");
-=======
-    const cachedData = sessionStorage.getItem("lostlinkSheetCache");
->>>>>>> bf441099c565a4b3b53c0ead07ab3c2973ecee30
 
     if (cachedData) {
         return JSON.parse(cachedData);
@@ -196,12 +192,9 @@ async function searchItem() {
                     cleanText(item["Date"]) ||
                     "Unknown";
 
-<<<<<<< HEAD
                 const photo =
                     cleanText(item["Photo"]);
 
-=======
->>>>>>> bf441099c565a4b3b53c0ead07ab3c2973ecee30
                 return `
                     <div>
 
@@ -222,7 +215,6 @@ async function searchItem() {
 
                         Date:
                         ${escapeHTML(date)}
-<<<<<<< HEAD
 
                         ${
                             photo
@@ -254,8 +246,6 @@ async function searchItem() {
                                 `
                                 : ""
                         }
-=======
->>>>>>> bf441099c565a4b3b53c0ead07ab3c2973ecee30
 
                     </div>
 
@@ -608,12 +598,9 @@ async function loadLatestItems() {
             let date =
                 cleanText(item["Date"]) ||
                 "Unknown";
-<<<<<<< HEAD
 
             const photo =
                 cleanText(item["Photo"]);
-=======
->>>>>>> bf441099c565a4b3b53c0ead07ab3c2973ecee30
 
             if (targetLang === "ja") {
 
@@ -673,7 +660,6 @@ async function loadLatestItems() {
                     ${dateLabel}
                     ${escapeHTML(date)}
 
-<<<<<<< HEAD
                     ${
                         photo
                             ? `
@@ -707,8 +693,6 @@ async function loadLatestItems() {
                             : ""
                     }
 
-=======
->>>>>>> bf441099c565a4b3b53c0ead07ab3c2973ecee30
                 </div>
 
                 <hr>
@@ -803,12 +787,9 @@ async function loadAllLatestItems() {
             let date =
                 cleanText(item["Date"]) ||
                 "Unknown";
-<<<<<<< HEAD
 
             const photo =
                 cleanText(item["Photo"]);
-=======
->>>>>>> bf441099c565a4b3b53c0ead07ab3c2973ecee30
 
             if (targetLang === "ja") {
 
@@ -868,7 +849,6 @@ async function loadAllLatestItems() {
                     ${dateLabel}
                     ${escapeHTML(date)}
 
-<<<<<<< HEAD
                     ${
                         photo
                             ? `
@@ -902,8 +882,6 @@ async function loadAllLatestItems() {
                             : ""
                     }
 
-=======
->>>>>>> bf441099c565a4b3b53c0ead07ab3c2973ecee30
                 </div>
 
                 <hr>
