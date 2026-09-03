@@ -2,21 +2,18 @@
 // PRJ LOSTLINK - MAIN JAVASCRIPT
 // ========================================
 
-
-
 // ========================================
 // PAGE SCROLL POSITION
 // ========================================
 
-// Prevent browser from restoring an old scroll position
 if ("scrollRestoration" in history) {
     history.scrollRestoration = "manual";
 }
 
-// Always open the page at the top
 window.addEventListener("pageshow", function () {
     window.scrollTo(0, 0);
 });
+
 
 // ========================================
 // GOOGLE SHEET
@@ -40,12 +37,14 @@ function saveItems(items) {
 
 
 // ========================================
-// LOAD GOOGLE SHEET (WITH CACHING)
+// LOAD GOOGLE SHEET
 // ========================================
 
 async function getGoogleSheetItems() {
 
-    const cachedData = sessionStorage.getItem("lostlinkSheetCache");
+    const cachedData =
+        sessionStorage.getItem("lostlinkSheetCache");
+
     if (cachedData) {
         return JSON.parse(cachedData);
     }
@@ -79,9 +78,27 @@ async function getGoogleSheetItems() {
         return item;
     });
 
-    sessionStorage.setItem("lostlinkSheetCache", JSON.stringify(items));
+    sessionStorage.setItem(
+        "lostlinkSheetCache",
+        JSON.stringify(items)
+    );
 
     return items;
+}
+
+
+// ========================================
+// TEXT CLEANER
+// ========================================
+
+// Removes accidental spaces and line breaks
+// from descriptions and other text.
+
+function cleanText(value) {
+
+    return String(value || "")
+        .replace(/\s+/g, " ")
+        .trim();
 }
 
 
@@ -131,15 +148,15 @@ async function searchItem() {
             approved.filter(item => {
 
                 const name =
-                    String(item["Item name"] || "")
+                    cleanText(item["Item name"])
                         .toLowerCase();
 
                 const description =
-                    String(item["Descption"] || "")
+                    cleanText(item["Descption"])
                         .toLowerCase();
 
                 const location =
-                    String(item["Location found"] || "")
+                    cleanText(item["Location found"])
                         .toLowerCase();
 
                 return (
@@ -149,7 +166,6 @@ async function searchItem() {
                 );
             });
 
-
         if (results.length === 0) {
 
             resultsBox.innerText =
@@ -158,41 +174,78 @@ async function searchItem() {
             return;
         }
 
-
         resultsBox.innerHTML =
             results.map(item => {
+
+                const name =
+                    cleanText(item["Item name"]) ||
+                    "Unknown item";
+
+                const description =
+                    cleanText(item["Descption"]);
+
+                const location =
+                    cleanText(item["Location found"]) ||
+                    "Unknown";
+
+                const date =
+                    cleanText(item["Date"]) ||
+                    "Unknown";
+
+                const photo =
+                    cleanText(item["Photo"]);
 
                 return `
                     <div>
 
                         <strong>
-                            ${escapeHTML(
-                                item["Item name"] ||
-                                "Unknown item"
-                            )}
+                            ${escapeHTML(name)}
                         </strong>
 
-                        <br>
+                        <br><br>
 
-                        ${escapeHTML(
-                            item["Descption"] || ""
-                        )}
+                        ${escapeHTML(description)}
 
                         <br>
 
                         Location:
-                        ${escapeHTML(
-                            item["Location found"] ||
-                            "Unknown"
-                        )}
+                        ${escapeHTML(location)}
 
                         <br>
 
                         Date:
-                        ${escapeHTML(
-                            item["Date"] ||
-                            "Unknown"
-                        )}
+                        ${escapeHTML(date)}
+
+                        ${
+                            photo
+                                ? `
+                                    <br><br>
+
+                                    <img
+                                        src="${escapeHTML(photo)}"
+                                        alt="Item photo"
+                                        loading="lazy"
+                                        style="
+                                            max-width:300px;
+                                            width:100%;
+                                            height:auto;
+                                            border-radius:8px;
+                                        "
+                                        onerror="this.style.display='none';"
+                                    >
+
+                                    <br>
+
+                                    <a
+                                        href="${escapeHTML(photo)}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        View Photo
+                                    </a>
+                                `
+                                : ""
+                        }
 
                     </div>
 
@@ -200,7 +253,6 @@ async function searchItem() {
                 `;
 
             }).join("");
-
 
     } catch (error) {
 
@@ -233,7 +285,6 @@ function submitItem() {
     const date =
         document.getElementById("date").value;
 
-
     if (name === "") {
 
         document.getElementById("message").innerText =
@@ -242,10 +293,8 @@ function submitItem() {
         return;
     }
 
-
     const items =
         getItems();
-
 
     const newItem = {
 
@@ -260,18 +309,14 @@ function submitItem() {
         date: date,
 
         status: "Pending"
-
     };
-
 
     items.push(newItem);
 
     saveItems(items);
 
-
     document.getElementById("message").innerText =
         "Submission received! Waiting for admin approval.";
-
 
     document.getElementById("itemName").value = "";
 
@@ -294,7 +339,6 @@ function adminLogin() {
 
     const password =
         document.getElementById("password").value;
-
 
     if (
         username === "LostLink ADMN" &&
@@ -356,7 +400,9 @@ function loadAdminItems() {
                     <br>
 
                     Description:
-                    ${escapeHTML(item.description)}
+                    ${escapeHTML(
+                        cleanText(item.description)
+                    )}
 
                     <br>
 
@@ -431,34 +477,52 @@ function rejectItem(id) {
 }
 
 
-
 // ========================================
-// FAST TRANSLATION CACHE & HELPER
+// TRANSLATION CACHE
 // ========================================
 
 const translationCache = {};
 
 async function translateText(text, targetLang) {
-    if (!text || targetLang === "EN") return text;
-    
-    const cacheKey = `${targetLang}_${text}`;
+
+    if (!text || targetLang === "EN") {
+        return text;
+    }
+
+    const cacheKey =
+        `${targetLang}_${text}`;
+
     if (translationCache[cacheKey]) {
         return translationCache[cacheKey];
     }
 
     try {
-        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=` + encodeURIComponent(text);
-        const res = await fetch(url);
-        const data = await res.json();
-        const translated = data[0].map(item => item[0]).join("");
-        
-        translationCache[cacheKey] = translated;
+
+        const url =
+            `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=` +
+            encodeURIComponent(text);
+
+        const res =
+            await fetch(url);
+
+        const data =
+            await res.json();
+
+        const translated =
+            data[0]
+                .map(item => item[0])
+                .join("");
+
+        translationCache[cacheKey] =
+            translated;
+
         return translated;
+
     } catch (e) {
+
         return text;
     }
 }
-
 
 
 // ========================================
@@ -466,63 +530,189 @@ async function translateText(text, targetLang) {
 // ========================================
 
 async function loadLatestItems() {
-    const container = document.getElementById("latestItems");
-    if (!container) return;
 
-    container.innerHTML = language === "JP" ? "読み込み中..." : "Loading...";
+    const container =
+        document.getElementById("latestItems");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML =
+        language === "JP"
+            ? "読み込み中..."
+            : "Loading...";
 
     try {
-        const items = await getGoogleSheetItems();
-        const approved = items.filter(item =>
-            String(item["Status"]).trim().toLowerCase() === "approved"
+
+        const items =
+            await getGoogleSheetItems();
+
+        const approved =
+            items.filter(item =>
+                String(item["Status"])
+                    .trim()
+                    .toLowerCase() === "approved"
+            );
+
+        approved.sort(
+            (a, b) =>
+                new Date(b["Timestamp"]) -
+                new Date(a["Timestamp"])
         );
 
-        approved.sort((a, b) => new Date(b["Timestamp"]) - new Date(a["Timestamp"]));
-        const recent = approved.slice(0, 3);
+        const recent =
+            approved.slice(0, 3);
 
         if (recent.length === 0) {
-            container.innerHTML = language === "JP" ? "<p>承認されたアイテムはありません。</p>" : "<p>No approved items yet.</p>";
+
+            container.innerHTML =
+                language === "JP"
+                    ? "<p>承認されたアイテムはありません。</p>"
+                    : "<p>No approved items yet.</p>";
+
             return;
         }
 
-        const targetLang = language === "JP" ? "ja" : "EN";
+        const targetLang =
+            language === "JP"
+                ? "ja"
+                : "EN";
+
         let htmlCards = "";
 
         for (const item of recent) {
-            let itemName = item["Item name"] || "Unknown item";
-            let description = item["Descption"] || "No description";
-            let location = item["Location found"] || "Unknown";
-            let date = item["Date"] || "Unknown";
+
+            let itemName =
+                cleanText(item["Item name"]) ||
+                "Unknown item";
+
+            let description =
+                cleanText(item["Descption"]) ||
+                "No description";
+
+            let location =
+                cleanText(item["Location found"]) ||
+                "Unknown";
+
+            let date =
+                cleanText(item["Date"]) ||
+                "Unknown";
+
+            const photo =
+                cleanText(item["Photo"]);
 
             if (targetLang === "ja") {
-                itemName = await translateText(itemName, "ja");
-                description = await translateText(description, "ja");
-                location = await translateText(location, "ja");
+
+                itemName =
+                    await translateText(
+                        itemName,
+                        "ja"
+                    );
+
+                description =
+                    await translateText(
+                        description,
+                        "ja"
+                    );
+
+                location =
+                    await translateText(
+                        location,
+                        "ja"
+                    );
             }
 
-            const descLabel = language === "JP" ? "説明:" : "Description:";
-            const locLabel = language === "JP" ? "場所:" : "Location:";
-            const dateLabel = language === "JP" ? "日付:" : "Date:";
+            const descLabel =
+                language === "JP"
+                    ? "説明:"
+                    : "Description:";
+
+            const locLabel =
+                language === "JP"
+                    ? "場所:"
+                    : "Location:";
+
+            const dateLabel =
+                language === "JP"
+                    ? "日付:"
+                    : "Date:";
 
             htmlCards += `
                 <div>
-                    <strong>${escapeHTML(itemName)}</strong>
+
+                    <strong>
+                        ${escapeHTML(itemName)}
+                    </strong>
+
                     <br><br>
-                    ${descLabel} ${escapeHTML(description)}
+
+                    ${descLabel}
+                    ${escapeHTML(description)}
+
                     <br>
-                    ${locLabel} ${escapeHTML(location)}
+
+                    ${locLabel}
+                    ${escapeHTML(location)}
+
                     <br>
-                    ${dateLabel} ${escapeHTML(date)}
+
+                    ${dateLabel}
+                    ${escapeHTML(date)}
+
+                    ${
+                        photo
+                            ? `
+                                <br><br>
+
+                                <img
+                                    src="${escapeHTML(photo)}"
+                                    alt="Item photo"
+                                    loading="lazy"
+                                    style="
+                                        max-width:300px;
+                                        width:100%;
+                                        height:auto;
+                                        border-radius:8px;
+                                    "
+                                    onerror="this.style.display='none';"
+                                >
+
+                                <br>
+
+                                <a
+                                    href="${escapeHTML(photo)}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    ${language === "JP"
+                                        ? "写真を見る"
+                                        : "View Photo"}
+                                </a>
+                            `
+                            : ""
+                    }
+
                 </div>
+
                 <hr>
             `;
         }
 
-        container.innerHTML = htmlCards;
+        container.innerHTML =
+            htmlCards;
 
     } catch (error) {
-        console.error("Google Sheet error:", error);
-        container.innerHTML = language === "JP" ? "<p>最近見つかったアイテムを読み込めませんでした。</p>" : "<p>Unable to load recently found items.</p>";
+
+        console.error(
+            "Google Sheet error:",
+            error
+        );
+
+        container.innerHTML =
+            language === "JP"
+                ? "<p>最近見つかったアイテムを読み込めませんでした。</p>"
+                : "<p>Unable to load recently found items.</p>";
     }
 }
 
@@ -532,62 +722,186 @@ async function loadLatestItems() {
 // ========================================
 
 async function loadAllLatestItems() {
-    const container = document.getElementById("allLatestItems");
-    if (!container) return;
 
-    container.innerHTML = language === "JP" ? "読み込み中..." : "Loading...";
+    const container =
+        document.getElementById("allLatestItems");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML =
+        language === "JP"
+            ? "読み込み中..."
+            : "Loading...";
 
     try {
-        const items = await getGoogleSheetItems();
-        const approved = items.filter(item =>
-            String(item["Status"]).trim().toLowerCase() === "approved"
+
+        const items =
+            await getGoogleSheetItems();
+
+        const approved =
+            items.filter(item =>
+                String(item["Status"])
+                    .trim()
+                    .toLowerCase() === "approved"
+            );
+
+        approved.sort(
+            (a, b) =>
+                new Date(b["Timestamp"]) -
+                new Date(a["Timestamp"])
         );
 
-        approved.sort((a, b) => new Date(b["Timestamp"]) - new Date(a["Timestamp"]));
-
         if (approved.length === 0) {
-            container.innerHTML = language === "JP" ? "<p>承認されたアイテムはありません。</p>" : "<p>No approved items yet.</p>";
+
+            container.innerHTML =
+                language === "JP"
+                    ? "<p>承認されたアイテムはありません。</p>"
+                    : "<p>No approved items yet.</p>";
+
             return;
         }
 
-        const targetLang = language === "JP" ? "ja" : "EN";
+        const targetLang =
+            language === "JP"
+                ? "ja"
+                : "EN";
+
         let htmlCards = "";
 
         for (const item of approved) {
-            let itemName = item["Item name"] || "Unknown item";
-            let description = item["Descption"] || "No description";
-            let location = item["Location found"] || "Unknown";
-            let date = item["Date"] || "Unknown";
+
+            let itemName =
+                cleanText(item["Item name"]) ||
+                "Unknown item";
+
+            let description =
+                cleanText(item["Descption"]) ||
+                "No description";
+
+            let location =
+                cleanText(item["Location found"]) ||
+                "Unknown";
+
+            let date =
+                cleanText(item["Date"]) ||
+                "Unknown";
+
+            const photo =
+                cleanText(item["Photo"]);
 
             if (targetLang === "ja") {
-                itemName = await translateText(itemName, "ja");
-                description = await translateText(description, "ja");
-                location = await translateText(location, "ja");
+
+                itemName =
+                    await translateText(
+                        itemName,
+                        "ja"
+                    );
+
+                description =
+                    await translateText(
+                        description,
+                        "ja"
+                    );
+
+                location =
+                    await translateText(
+                        location,
+                        "ja"
+                    );
             }
 
-            const descLabel = language === "JP" ? "説明:" : "Description:";
-            const locLabel = language === "JP" ? "場所:" : "Location:";
-            const dateLabel = language === "JP" ? "日付:" : "Date:";
+            const descLabel =
+                language === "JP"
+                    ? "説明:"
+                    : "Description:";
+
+            const locLabel =
+                language === "JP"
+                    ? "場所:"
+                    : "Location:";
+
+            const dateLabel =
+                language === "JP"
+                    ? "日付:"
+                    : "Date:";
 
             htmlCards += `
                 <div>
-                    <strong>${escapeHTML(itemName)}</strong>
+
+                    <strong>
+                        ${escapeHTML(itemName)}
+                    </strong>
+
                     <br><br>
-                    ${descLabel} ${escapeHTML(description)}
+
+                    ${descLabel}
+                    ${escapeHTML(description)}
+
                     <br>
-                    ${locLabel} ${escapeHTML(location)}
+
+                    ${locLabel}
+                    ${escapeHTML(location)}
+
                     <br>
-                    ${dateLabel} ${escapeHTML(date)}
+
+                    ${dateLabel}
+                    ${escapeHTML(date)}
+
+                    ${
+                        photo
+                            ? `
+                                <br><br>
+
+                                <img
+                                    src="${escapeHTML(photo)}"
+                                    alt="Item photo"
+                                    loading="lazy"
+                                    style="
+                                        max-width:300px;
+                                        width:100%;
+                                        height:auto;
+                                        border-radius:8px;
+                                    "
+                                    onerror="this.style.display='none';"
+                                >
+
+                                <br>
+
+                                <a
+                                    href="${escapeHTML(photo)}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    ${language === "JP"
+                                        ? "写真を見る"
+                                        : "View Photo"}
+                                </a>
+                            `
+                            : ""
+                    }
+
                 </div>
+
                 <hr>
             `;
         }
 
-        container.innerHTML = htmlCards;
+        container.innerHTML =
+            htmlCards;
 
     } catch (error) {
-        console.error("Latest items error:", error);
-        container.innerHTML = language === "JP" ? "<p>最新アイテムを読み込めませんでした。</p>" : "<p>Unable to load latest items.</p>";
+
+        console.error(
+            "Latest items error:",
+            error
+        );
+
+        container.innerHTML =
+            language === "JP"
+                ? "<p>最新アイテムを読み込めませんでした。</p>"
+                : "<p>Unable to load latest items.</p>";
     }
 }
 
@@ -606,7 +920,6 @@ function parseCSV(text) {
 
     let insideQuotes = false;
 
-
     for (
         let i = 0;
         i < text.length;
@@ -619,7 +932,6 @@ function parseCSV(text) {
         const nextCharacter =
             text[i + 1];
 
-
         if (
             character === '"' &&
             insideQuotes &&
@@ -629,7 +941,6 @@ function parseCSV(text) {
             value += '"';
 
             i++;
-
         }
 
         else if (
@@ -638,7 +949,6 @@ function parseCSV(text) {
 
             insideQuotes =
                 !insideQuotes;
-
         }
 
         else if (
@@ -649,7 +959,6 @@ function parseCSV(text) {
             row.push(value);
 
             value = "";
-
         }
 
         else if (
@@ -675,7 +984,6 @@ function parseCSV(text) {
             row = [];
 
             value = "";
-
         }
 
         else {
@@ -683,7 +991,6 @@ function parseCSV(text) {
             value += character;
         }
     }
-
 
     if (
         value !== "" ||
@@ -694,7 +1001,6 @@ function parseCSV(text) {
 
         rows.push(row);
     }
-
 
     return rows;
 }
@@ -715,17 +1021,18 @@ function escapeHTML(value) {
 }
 
 
-
 // ========================================
 // LANGUAGE - EN / JP
 // ========================================
 
 let language =
-    localStorage.getItem("lostlinkLanguage") || "EN";
+    localStorage.getItem("lostlinkLanguage") ||
+    "EN";
 
 function setLanguage(selectedLanguage) {
 
-    language = selectedLanguage;
+    language =
+        selectedLanguage;
 
     localStorage.setItem(
         "lostlinkLanguage",
@@ -733,10 +1040,20 @@ function setLanguage(selectedLanguage) {
     );
 
     updateLanguageButtons();
+
     applyTranslations();
 
-    if (typeof loadLatestItems === "function") loadLatestItems();
-    if (typeof loadAllLatestItems === "function") loadAllLatestItems();
+    if (
+        typeof loadLatestItems === "function"
+    ) {
+        loadLatestItems();
+    }
+
+    if (
+        typeof loadAllLatestItems === "function"
+    ) {
+        loadAllLatestItems();
+    }
 }
 
 function updateLanguageButtons() {
@@ -751,13 +1068,25 @@ function updateLanguageButtons() {
         return;
     }
 
-    enButton.classList.remove("selected");
-    jpButton.classList.remove("selected");
+    enButton.classList.remove(
+        "selected"
+    );
+
+    jpButton.classList.remove(
+        "selected"
+    );
 
     if (language === "EN") {
-        enButton.classList.add("selected");
+
+        enButton.classList.add(
+            "selected"
+        );
+
     } else {
-        jpButton.classList.add("selected");
+
+        jpButton.classList.add(
+            "selected"
+        );
     }
 }
 
@@ -765,106 +1094,226 @@ updateLanguageButtons();
 
 
 // ========================================
-// TRANSLATIONS DICTIONARY & APPLIER
+// TRANSLATIONS
 // ========================================
 
 const translations = {
+
     EN: {
-        // Index / General
-        subTitle: "Student Lost & Found System",
-        menuTitle: "Menu",
-        menuSearch: "[1] Search for an item",
-        menuReport: "[2] Report a lost/found item",
-        menuLatest: "[3] View Latest Items",
-        recentTitle: "Recently Found Items",
-        loadingText: "Loading...",
-        viewAllLink: "View all latest items →",
-        systemDescLink: "System Description",
-        
-        // DEV.html
-        pageTitle: "LostLink NTW",
-        pageSubtitle: "System Description",
-        creatorLabel: "Creator and Maintainer (Nickname):",
-        ownerLabel: "System Owned by:",
-        poweredLabel: "This System is Powered by",
-        githubTitle: "Git-Hub (temporary)",
-        warningText: "WARNING: This system tend to have technical errors with Google Chrome (MOBILE).",
-        browserText: "DEFAULT BROWSER IS RECOMMENDED",
-        backHome: "← Back to Home",
 
-        // latest.html
-        latestTitle: "Latest Items",
+        subTitle:
+            "Student Lost & Found System",
 
-        // report.html
-        reportTitle: "Report an Item",
-        reportInstruction: "Click the link below to open the report form:",
-        reportFormLink: "Open Lost & Found Report Form",
+        menuTitle:
+            "Menu",
 
-        // search.html
-        searchTitle: "Search",
-        searchButton: "Search",
-        searchPlaceholder: "Enter item name, description, or location",
-        searchResultsDefault: "Enter a search term above."
+        menuSearch:
+            "[1] Search for an item",
+
+        menuReport:
+            "[2] Report a lost/found item",
+
+        menuLatest:
+            "[3] View Latest Items",
+
+        recentTitle:
+            "Recently Found Items",
+
+        loadingText:
+            "Loading...",
+
+        viewAllLink:
+            "View all latest items →",
+
+        systemDescLink:
+            "System Description",
+
+        pageTitle:
+            "LostLink NTW",
+
+        pageSubtitle:
+            "System Description",
+
+        creatorLabel:
+            "Creator and Maintainer (Nickname):",
+
+        ownerLabel:
+            "System Owned by:",
+
+        poweredLabel:
+            "This System is Powered by",
+
+        githubTitle:
+            "Git-Hub (temporary)",
+
+        warningText:
+            "WARNING: This system tend to have technical errors with Google Chrome (MOBILE).",
+
+        browserText:
+            "DEFAULT BROWSER IS RECOMMENDED",
+
+        backHome:
+            "← Back to Home",
+
+        latestTitle:
+            "Latest Items",
+
+        reportTitle:
+            "Report an Item",
+
+        reportInstruction:
+            "Click the link below to open the report form:",
+
+        reportFormLink:
+            "Open Lost & Found Report Form",
+
+        searchTitle:
+            "Search",
+
+        searchButton:
+            "Search",
+
+        searchPlaceholder:
+            "Enter item name, description, or location",
+
+        searchResultsDefault:
+            "Enter a search term above."
     },
+
     JP: {
-        // Index / General
-        subTitle: "生徒 忘れ物・落とし物システム",
-        menuTitle: "メニュー",
-        menuSearch: "[1] アイテムを検索する",
-        menuReport: "[2] 落とし物・拾得物を報告する",
-        menuLatest: "[3] 最新のアイテムを見る",
-        recentTitle: "最近見つかったアイテム",
-        loadingText: "読み込み中...",
-        viewAllLink: "すべての最新アイテムを見る →",
-        systemDescLink: "システム説明",
-        
-        // DEV.html
-        pageTitle: "LostLink NTW",
-        pageSubtitle: "システム説明",
-        creatorLabel: "作成者および維持管理者のニックネーム：",
-        ownerLabel: "システム所有者：",
-        poweredLabel: "このシステムは次世代の技術で駆動しています",
-        githubTitle: "GitHub（一時的）",
-        warningText: "警告：このシステムはGoogle Chrome（モバイル）で技術的なエラーが発生します。",
-        browserText: "デフォルトブラウザの使用をお勧めします",
-        backHome: "← ホームに戻る",
 
-        // latest.html
-        latestTitle: "最新のアイテム",
+        subTitle:
+            "生徒 忘れ物・落とし物システム",
 
-        // report.html
-        reportTitle: "アイテムを報告する",
-        reportInstruction: "レポートフォームを開くには、以下のリンクをクリックしてください：",
-        reportFormLink: "忘れ物・落とし物レポートフォームを開く",
+        menuTitle:
+            "メニュー",
 
-        // search.html
-        searchTitle: "検索",
-        searchButton: "検索する",
-        searchPlaceholder: "アイテム名、説明、または場所を入力してください",
-        searchResultsDefault: "上に検索語を入力してください。"
+        menuSearch:
+            "[1] アイテムを検索する",
+
+        menuReport:
+            "[2] 落とし物を報告する",
+
+        menuLatest:
+            "[3] 報告された落とし物を閲覧する",
+
+        recentTitle:
+            "最近報告された落とし物",
+
+        loadingText:
+            "読み込み中...",
+
+        viewAllLink:
+            "すべての報告された落し物を見る →",
+
+        systemDescLink:
+            "システム詳細",
+
+        pageTitle:
+            "LostLink NTW",
+
+        pageSubtitle:
+            "システム詳細",
+
+        creatorLabel:
+            "本サイトの持管理者のニックネーム：",
+
+        ownerLabel:
+            "システム所有者：",
+
+        poweredLabel:
+            "このシステムは次世代の技術で駆動しています",
+
+        githubTitle:
+            "GitHub（一時的）",
+
+        warningText:
+            "警告：このシステムはGoogle Chrome（モバイル）で技術的なエラーが発生します。",
+
+        browserText:
+            "デフォルトブラウザの使用をお勧めします",
+
+        backHome:
+            "← ホームに戻る",
+
+        latestTitle:
+            "最近発見された落とし物",
+
+        reportTitle:
+            "落とし物を報告する",
+
+        reportInstruction:
+            "落とし物を報告するには、以下のリンクをクリックしてください：",
+
+        reportFormLink:
+            "忘れ物・落とし物レポートフォームを開く",
+
+        searchTitle:
+            "検索",
+
+        searchButton:
+            "検索する",
+
+        searchPlaceholder:
+            "アイテム名、説明、または場所を入力してください",
+
+        searchResultsDefault:
+            "上に検索語を入力してください。"
     }
 };
 
+
+// ========================================
+// APPLY TRANSLATIONS
+// ========================================
+
 function applyTranslations() {
-    const t = translations[language];
-    if (!t) return;
+
+    const t =
+        translations[language];
+
+    if (!t) {
+        return;
+    }
 
     for (const key in t) {
-        const el = document.getElementById(key);
+
+        const el =
+            document.getElementById(key);
+
         if (el) {
-            if (el.tagName === "INPUT" && key === "searchPlaceholder") {
-                el.placeholder = t[key];
+
+            if (
+                el.tagName === "INPUT" &&
+                key === "searchPlaceholder"
+            ) {
+
+                el.placeholder =
+                    t[key];
+
             } else {
-                el.innerText = t[key];
+
+                el.innerText =
+                    t[key];
             }
         }
     }
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    updateLanguageButtons();
-    applyTranslations();
-});
+
+// ========================================
+// PAGE START
+// ========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        updateLanguageButtons();
+
+        applyTranslations();
+    }
+);
 
 
 // ========================================
@@ -872,16 +1321,36 @@ document.addEventListener("DOMContentLoaded", function() {
 // ========================================
 
 // Admin dashboard
-if (document.getElementById("pendingItems")) {
+
+if (
+    document.getElementById(
+        "pendingItems"
+    )
+) {
+
     loadAdminItems();
 }
 
+
 // Homepage
-if (document.getElementById("latestItems")) {
+
+if (
+    document.getElementById(
+        "latestItems"
+    )
+) {
+
     loadLatestItems();
 }
 
+
 // Full latest items page
-if (document.getElementById("allLatestItems")) {
+
+if (
+    document.getElementById(
+        "allLatestItems"
+    )
+) {
+
     loadAllLatestItems();
 }
